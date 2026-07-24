@@ -1,0 +1,14 @@
+[workspace]
+members = [
+  "crates/note_core",
+  "crates/note_geometry",
+  "crates/note_index",
+  "crates/note_storage",
+  "crates/note_backend",
+  "crates/note_bridge",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.XX"

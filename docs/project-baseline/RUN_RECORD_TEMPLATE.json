@@ -1,0 +1,39 @@
+{
+  "run_id": "YYYYMMDD-HHMM-short-name",
+  "stage": "M0/M1/M2/...",
+  "git_commit": "",
+  "device": {
+    "model": "OPPO Pad 4 Pro",
+    "build_fingerprint": "",
+    "android": "16",
+    "rooted": false
+  },
+  "toolchain": {
+    "flutter": "3.44.1",
+    "dart": "",
+    "android_studio": "",
+    "platform_tools": "",
+    "ndk": "",
+    "rustc": ""
+  },
+  "build": {
+    "variant": "devDebug/devProfile/personalRelease",
+    "application_id": "",
+    "profileable": false
+  },
+  "environment": {
+    "refresh_rate_hz": 120,
+    "battery_percent": null,
+    "temperature_c": null,
+    "device_mirroring": false,
+    "screen_recording": false,
+    "network": "usb/wifi/offline"
+  },
+  "dataset": "",
+  "operation_trace": "",
+  "metrics": {},
+  "artifacts": [],
+  "observation": "",
+  "conclusion": "",
+  "valid_for_decision": false
+}

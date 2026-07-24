@@ -1,0 +1,7 @@
+id,action,kill_point,expected
+F01,create_stroke,before_transaction,no_change
+F02,create_stroke,mid_transaction,old_revision_or_new_revision_never_partial
+F03,create_stroke,after_commit,new_revision
+F04,undo,mid_transaction,consistent_cursor_and_elements
+F05,migration,between_versions,old_db_reopen_or_atomic_new_schema
+F06,backup,during_active_writes,backup_is_consistent_snapshot

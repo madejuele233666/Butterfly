@@ -1,0 +1,19 @@
+partial_eraser:
+  - tangent_touch
+  - crosses_once
+  - crosses_multiple_times
+  - fast_sparse_stroke
+  - pressure_interpolation
+  - undo_exact_restore
+lasso:
+  - fully_inside
+  - crossing_boundary
+  - outside
+  - concave_polygon
+  - near_zero_area
+  - transformed_stroke
+selection_move:
+  - 1_element
+  - 500_elements
+  - one_history_entry
+  - rtree_updated

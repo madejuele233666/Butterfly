@@ -1,0 +1,1184 @@
+{
+  "schema": "madejuele.note-project.requirements-baseline/v1",
+  "version": "1.0.0",
+  "status": "frozen",
+  "created_at": "2026-07-24T00:00:00+09:00",
+  "purpose": "保存用户原始需求、原始 Grill 问题与正式回答；任何后续计划不得静默覆盖这些内容。",
+  "original_requests_verbatim": [
+    "我想开发一个Android平板的笔记软件，支持手写笔。进行前期市场调研，以及参考开源代码的思路。开发动机：我期望实现一个可自定义的笔记软件，可以自己加功能而不用等待商业软件缓慢更新",
+    "我完全可以开源发布，我甚至可以不发布，只自己使用",
+    "从性能和使用体验来分析各软件的内核质量，选取最适合fork的项目\n从第一性原理出发思考",
+    "使用grill全面了解我的开发需求",
+    "深度grill，同时深度搜索资料和调研，输出一份详细的计划（注：这里的详细并不是功能多，功能依旧保留第一版附近的功能。这里的详细是每个功能给出详细的参考实现路线。同时保留我的原始需求和原始问答，防止后续迭代文档时逐渐飘移）"
+  ],
+  "grill_rounds": [
+    {
+      "questionnaire": {
+        "protocol": "chatgpt-grill/v1",
+        "id": "note-dev-requirements-01",
+        "title": "Android 手写笔记软件需求梳理",
+        "description": "这些问题用于确定产品定位、内核路线、性能目标和第一版开发边界。可只排序或选择你真正关心的内容。",
+        "submit_label": "提交并继续",
+        "review_before_submit": true,
+        "questions": [
+          {
+            "id": "release_scope",
+            "header": "项目定位",
+            "question": "你预计这个项目最终以什么形式存在？",
+            "description": "这会影响兼容性投入、插件安全边界、升级机制和代码维护方式。",
+            "type": "single_select",
+            "required": true,
+            "options": [
+              {
+                "label": "仅供自己使用",
+                "value": "personal_only",
+                "description": "只适配自己的平板和工作流，可以大胆修改并减少兼容性成本。",
+                "recommended": true
+              },
+              {
+                "label": "分享给少量熟人使用",
+                "value": "small_private_group",
+                "description": "需要基本的稳定性、迁移和多设备兼容。"
+              },
+              {
+                "label": "公开开源发布",
+                "value": "public_open_source",
+                "description": "需要文档、通用配置、版本迁移和更广泛设备支持。"
+              },
+              {
+                "label": "未来可能商业化",
+                "value": "possible_commercial",
+                "description": "需要更严格考虑许可证、模块边界和产品化架构。"
+              }
+            ],
+            "allow_other": false
+          },
+          {
+            "id": "target_hardware",
+            "header": "目标设备",
+            "question": "请填写主要测试设备信息。",
+            "description": "手写延迟、预测、侧键、掌托和高刷新率表现高度依赖具体设备。",
+            "type": "fill_blanks",
+            "required": true,
+            "blanks": [
+              {
+                "id": "tablet_model",
+                "label": "平板品牌与型号",
+                "placeholder": "例如 Samsung Galaxy Tab S9+",
+                "required": true,
+                "multiline": false,
+                "max_length": 100
+              },
+              {
+                "id": "android_version",
+                "label": "Android 版本",
+                "placeholder": "例如 Android 16",
+                "required": false,
+                "multiline": false,
+                "max_length": 50
+              },
+              {
+                "id": "stylus",
+                "label": "手写笔型号与能力",
+                "placeholder": "例如 S Pen，支持压力、悬停、侧键、笔尾橡皮擦",
+                "required": true,
+                "multiline": false,
+                "max_length": 160
+              },
+              {
+                "id": "screen_refresh",
+                "label": "屏幕刷新率",
+                "placeholder": "例如 120 Hz",
+                "required": false,
+                "multiline": false,
+                "max_length": 40
+              },
+              {
+                "id": "secondary_devices",
+                "label": "是否还需兼容其他设备",
+                "placeholder": "例如 Windows 查看、Android 手机只读，或完全不需要",
+                "required": false,
+                "multiline": true,
+                "max_length": 240
+              }
+            ]
+          },
+          {
+            "id": "primary_workflows",
+            "header": "使用场景",
+            "question": "第一阶段必须支持哪些核心工作流？",
+            "description": "最多选择 5 项。未选择的功能可以延后，不代表永远不做。",
+            "type": "multi_select",
+            "required": true,
+            "min_selections": 1,
+            "max_selections": 5,
+            "options": [
+              {
+                "label": "课堂或自学手写笔记",
+                "value": "handwritten_study_notes",
+                "description": "长时间连续书写、分页、模板、公式和图示。"
+              },
+              {
+                "label": "PDF 阅读与批注",
+                "value": "pdf_annotation",
+                "description": "导入教材、试卷、论文并直接书写和摘录。"
+              },
+              {
+                "label": "无限画布与自由排版",
+                "value": "infinite_canvas",
+                "description": "思维导图、推导过程、自由缩放和大范围布局。"
+              },
+              {
+                "label": "手写与文本混排",
+                "value": "mixed_handwriting_text",
+                "description": "Markdown、代码、公式、图片与笔迹共同存在。"
+              },
+              {
+                "label": "题目整理与错题本",
+                "value": "problem_workflow",
+                "description": "截图、裁剪、答案折叠、标签和题目来源链接。"
+              },
+              {
+                "label": "知识库与双向链接",
+                "value": "knowledge_base",
+                "description": "页面引用、反向链接、标签、搜索和关系组织。"
+              },
+              {
+                "label": "会议记录或录音同步",
+                "value": "meeting_audio",
+                "description": "录音时间轴与笔迹时间戳关联。"
+              },
+              {
+                "label": "演示、白板与激光笔",
+                "value": "presentation_whiteboard",
+                "description": "投屏、演示模式、临时标记和协作展示。"
+              },
+              {
+                "label": "AI、OCR 与数学识别",
+                "value": "ai_ocr_math",
+                "description": "对选区或页面执行识别、总结、检索和结构化处理。"
+              }
+            ],
+            "allow_other": true
+          },
+          {
+            "id": "document_model",
+            "header": "文档形态",
+            "question": "你希望默认采用哪种笔记空间模型？",
+            "description": "这是影响渲染、存储、导航和 PDF 工作流的基础决策。",
+            "type": "single_select",
+            "required": true,
+            "options": [
+              {
+                "label": "传统分页笔记本",
+                "value": "paged_notebook",
+                "description": "类似 Goodnotes、Samsung Notes，每页尺寸固定，适合打印与 PDF。"
+              },
+              {
+                "label": "纯无限画布",
+                "value": "infinite_canvas_only",
+                "description": "没有固定页面边界，强调自由布局和缩放。"
+              },
+              {
+                "label": "分页与无限画布并存",
+                "value": "hybrid_modes",
+                "description": "每个文档可选择分页或无限画布，能力最完整但实现复杂。",
+                "recommended": true
+              },
+              {
+                "label": "PDF 为主、空白笔记为辅",
+                "value": "pdf_first",
+                "description": "重点优化教材、论文和试卷批注。"
+              },
+              {
+                "label": "连续纵向长纸",
+                "value": "continuous_vertical",
+                "description": "类似一张无限向下延伸的纸，但宽度固定。"
+              }
+            ],
+            "allow_other": true
+          },
+          {
+            "id": "priority_ranking",
+            "header": "优先级",
+            "question": "请按重要程度排序最关键的目标。",
+            "description": "最多排序 6 项，不需要给其余候选项强行排位。",
+            "type": "ranking",
+            "required": true,
+            "min_ranked": 3,
+            "max_ranked": 6,
+            "options": [
+              {
+                "label": "笔迹低延迟与跟手性",
+                "value": "ink_latency"
+              },
+              {
+                "label": "满页和大文档仍保持流畅",
+                "value": "large_document_performance"
+              },
+              {
+                "label": "笔刷手感、压力和线条质量",
+                "value": "stroke_quality"
+              },
+              {
+                "label": "PDF 导入、批注与导出",
+                "value": "pdf_workflow"
+              },
+              {
+                "label": "套索、橡皮擦、撤销等编辑体验",
+                "value": "editing_tools"
+              },
+              {
+                "label": "崩溃恢复与数据可靠性",
+                "value": "data_reliability"
+              },
+              {
+                "label": "功能可扩展和可编程",
+                "value": "extensibility"
+              },
+              {
+                "label": "开放文件格式与可迁移性",
+                "value": "open_format"
+              },
+              {
+                "label": "跨设备同步",
+                "value": "sync"
+              },
+              {
+                "label": "界面美观与操作效率",
+                "value": "ui_ux"
+              },
+              {
+                "label": "OCR、AI 和自动化能力",
+                "value": "ai_automation"
+              }
+            ]
+          },
+          {
+            "id": "performance_target",
+            "header": "性能标准",
+            "question": "你希望第一版达到哪一级性能目标？",
+            "description": "更高目标可能要求替换 Flutter 实时墨迹层，接入 Jetpack Ink 或原生渲染。",
+            "type": "single_select",
+            "required": true,
+            "options": [
+              {
+                "label": "能稳定日常使用即可",
+                "value": "practical_daily",
+                "description": "普通课堂笔记和 PDF 批注流畅，极端大文档允许降级。"
+              },
+              {
+                "label": "明显优于现有开源软件",
+                "value": "better_than_open_source",
+                "description": "密集满页、连续书写、套索和撤销均不能频繁卡顿。",
+                "recommended": true
+              },
+              {
+                "label": "接近 Samsung Notes 级跟手性",
+                "value": "near_native_commercial",
+                "description": "将低延迟视为核心指标，接受原生 Kotlin、Jetpack Ink 或 C++ 混合架构。"
+              },
+              {
+                "label": "优先极限性能，不惜大幅重构",
+                "value": "maximum_performance",
+                "description": "以高刷新率、超大文档和严格帧时间为目标，功能开发可延后。"
+              }
+            ],
+            "allow_other": false
+          },
+          {
+            "id": "extensibility_level",
+            "header": "自定义方式",
+            "question": "你期望以后如何给软件增加功能？",
+            "description": "这决定是否需要命令注册表、运行时脚本、插件 API 和权限隔离。",
+            "type": "single_select",
+            "required": true,
+            "options": [
+              {
+                "label": "直接修改源码并重新编译",
+                "value": "source_modification",
+                "description": "最简单，适合仅自己使用，但功能容易与核心代码耦合。"
+              },
+              {
+                "label": "内部模块与注册表",
+                "value": "internal_extension_registry",
+                "description": "新工具、命令和元素通过统一接口注册，仍需重新编译。",
+                "recommended": true
+              },
+              {
+                "label": "应用内脚本系统",
+                "value": "runtime_scripting",
+                "description": "使用 Lua、JavaScript 或其他脚本直接编写自动化和处理逻辑。"
+              },
+              {
+                "label": "完整第三方插件系统",
+                "value": "external_plugin_system",
+                "description": "允许独立插件包安装、启停和升级，复杂度与安全成本最高。"
+              },
+              {
+                "label": "内部扩展加脚本系统",
+                "value": "registry_plus_scripting",
+                "description": "核心工具使用类型安全接口，个人自动化使用脚本。"
+              }
+            ],
+            "allow_other": true
+          },
+          {
+            "id": "development_constraints",
+            "header": "开发边界",
+            "question": "请填写影响技术路线的实际约束。",
+            "description": "这些信息将用于决定直接 Fork Butterfly、改造 Saber，还是采用原生/混合内核。",
+            "type": "fill_blanks",
+            "required": true,
+            "blanks": [
+              {
+                "id": "languages_frameworks",
+                "label": "愿意使用的语言与框架",
+                "placeholder": "例如 Kotlin、Flutter/Dart、C++、React Native 均可",
+                "required": true,
+                "multiline": true,
+                "max_length": 300
+              },
+              {
+                "id": "unacceptable_stack",
+                "label": "不能接受的技术或维护负担",
+                "placeholder": "例如不想碰 C++、不接受 React Native、不要服务器",
+                "required": false,
+                "multiline": true,
+                "max_length": 300
+              },
+              {
+                "id": "weekly_time",
+                "label": "预计每周投入时间",
+                "placeholder": "例如每周 8 小时",
+                "required": true,
+                "multiline": false,
+                "max_length": 80
+              },
+              {
+                "id": "first_milestone",
+                "label": "第一版必须具备的功能",
+                "placeholder": "例如稳定手写、分页、PDF、套索、自动保存，其他全部延后",
+                "required": true,
+                "multiline": true,
+                "max_length": 600
+              },
+              {
+                "id": "storage_sync_export",
+                "label": "存储、同步与导出要求",
+                "placeholder": "例如本地文件夹为真相源，WebDAV 同步，必须导出 PDF/SVG/PNG",
+                "required": true,
+                "multiline": true,
+                "max_length": 500
+              },
+              {
+                "id": "special_features",
+                "label": "你最想自行添加的特殊功能",
+                "placeholder": "请列出商业软件迟迟没有实现、但你最需要的功能",
+                "required": false,
+                "multiline": true,
+                "max_length": 800
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "protocol": "chatgpt-grill-response/v1",
+        "in_reply_to": "note-dev-requirements-01",
+        "answers": [
+          {
+            "question_id": "release_scope",
+            "question": "你预计这个项目最终以什么形式存在？",
+            "type": "single_select",
+            "values": [
+              "personal_only"
+            ],
+            "labels": [
+              "仅供自己使用"
+            ]
+          },
+          {
+            "question_id": "target_hardware",
+            "question": "请填写主要测试设备信息。",
+            "type": "fill_blanks",
+            "fields": [
+              {
+                "id": "tablet_model",
+                "label": "平板品牌与型号",
+                "value": "Oppo Pad 4 Pro"
+              },
+              {
+                "id": "android_version",
+                "label": "Android 版本",
+                "value": "16"
+              },
+              {
+                "id": "stylus",
+                "label": "手写笔型号与能力",
+                "value": "Oppo Pen 2"
+              },
+              {
+                "id": "screen_refresh",
+                "label": "屏幕刷新率",
+                "value": "120"
+              },
+              {
+                "id": "secondary_devices",
+                "label": "是否还需兼容其他设备",
+                "value": "不需要"
+              }
+            ]
+          },
+          {
+            "question_id": "primary_workflows",
+            "question": "第一阶段必须支持哪些核心工作流？",
+            "type": "multi_select",
+            "values": [
+              "handwritten_study_notes",
+              "infinite_canvas"
+            ],
+            "labels": [
+              "课堂或自学手写笔记",
+              "无限画布与自由排版"
+            ]
+          },
+          {
+            "question_id": "document_model",
+            "question": "你希望默认采用哪种笔记空间模型？",
+            "type": "single_select",
+            "values": [
+              "hybrid_modes"
+            ],
+            "labels": [
+              "分页与无限画布并存"
+            ]
+          },
+          {
+            "question_id": "priority_ranking",
+            "question": "请按重要程度排序最关键的目标。",
+            "type": "ranking",
+            "ranking": [
+              {
+                "rank": 1,
+                "value": "large_document_performance",
+                "label": "满页和大文档仍保持流畅"
+              },
+              {
+                "rank": 2,
+                "value": "ink_latency",
+                "label": "笔迹低延迟与跟手性"
+              },
+              {
+                "rank": 3,
+                "value": "stroke_quality",
+                "label": "笔刷手感、压力和线条质量"
+              },
+              {
+                "rank": 4,
+                "value": "editing_tools",
+                "label": "套索、橡皮擦、撤销等编辑体验"
+              },
+              {
+                "rank": 5,
+                "value": "ui_ux",
+                "label": "界面美观与操作效率"
+              },
+              {
+                "rank": 6,
+                "value": "data_reliability",
+                "label": "崩溃恢复与数据可靠性"
+              }
+            ],
+            "unranked_values": [
+              "pdf_workflow",
+              "extensibility",
+              "open_format",
+              "sync",
+              "ai_automation"
+            ]
+          },
+          {
+            "question_id": "performance_target",
+            "question": "你希望第一版达到哪一级性能目标？",
+            "type": "single_select",
+            "values": [
+              "better_than_open_source"
+            ],
+            "labels": [
+              "明显优于现有开源软件"
+            ]
+          },
+          {
+            "question_id": "extensibility_level",
+            "question": "你期望以后如何给软件增加功能？",
+            "type": "single_select",
+            "values": [
+              "internal_extension_registry"
+            ],
+            "labels": [
+              "内部模块与注册表"
+            ]
+          },
+          {
+            "question_id": "development_constraints",
+            "question": "请填写影响技术路线的实际约束。",
+            "type": "fill_blanks",
+            "fields": [
+              {
+                "id": "languages_frameworks",
+                "label": "愿意使用的语言与框架",
+                "value": "任意，略微偏好Rust"
+              },
+              {
+                "id": "unacceptable_stack",
+                "label": "不能接受的技术或维护负担",
+                "value": "模块强耦合，过度防御性编程"
+              },
+              {
+                "id": "weekly_time",
+                "label": "预计每周投入时间",
+                "value": "可持续投入时间"
+              },
+              {
+                "id": "first_milestone",
+                "label": "第一版必须具备的功能",
+                "value": "参考先前的回答"
+              },
+              {
+                "id": "storage_sync_export",
+                "label": "存储、同步与导出要求",
+                "value": "无，可实现基础功能但不是重点"
+              },
+              {
+                "id": "special_features",
+                "label": "你最想自行添加的特殊功能",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "questionnaire": {
+        "protocol": "chatgpt-grill/v1",
+        "id": "note-dev-requirements-02",
+        "title": "Android 手写笔记软件深度需求审查",
+        "description": "这一轮只追问会改变内核、交互或开发计划的关键决策。回答将与上一轮原始问答一起原样保留在最终计划中，作为后续迭代的需求基线。",
+        "submit_label": "提交并生成详细计划",
+        "review_before_submit": true,
+        "questions": [
+          {
+            "id": "foundation_strategy",
+            "header": "基础路线",
+            "question": "你接受哪种项目起步方式？",
+            "description": "这决定最终计划是围绕 Butterfly 深改，还是围绕原生新内核展开。后续仍会把 Butterfly、Saber、Jetpack Ink 等作为对照和参考。",
+            "type": "single_select",
+            "required": true,
+            "options": [
+              {
+                "label": "先做独立性能原型，再决定 Fork 或重写",
+                "value": "benchmark_first",
+                "description": "分别验证 Jetpack Ink、Butterfly 和必要的 Rust 模块，以数据决定最终主线。",
+                "recommended": true
+              },
+              {
+                "label": "直接新建 Kotlin + Jetpack Ink 项目",
+                "value": "greenfield_native",
+                "description": "不继承现有应用架构，只选择性参考其实现。"
+              },
+              {
+                "label": "以 Butterfly 为主仓库逐步重构",
+                "value": "butterfly_mainline",
+                "description": "优先保留已有编辑器、文档和 UI，再替换性能瓶颈。"
+              },
+              {
+                "label": "维护 Butterfly Fork，同时另建原生内核",
+                "value": "dual_track",
+                "description": "一个分支尽快可用，一个分支探索最终架构；开发成本最高。"
+              }
+            ],
+            "allow_other": false
+          },
+          {
+            "id": "writing_tools",
+            "header": "书写工具",
+            "question": "第一版必须具备哪些笔与输入行为？",
+            "description": "最多选择 7 项。未选功能将明确排除在第一版实现计划之外。",
+            "type": "multi_select",
+            "required": true,
+            "min_selections": 1,
+            "max_selections": 7,
+            "options": [
+              {
+                "label": "单一压力钢笔",
+                "value": "pressure_pen",
+                "description": "宽度随压力变化，是第一版默认主笔。",
+                "recommended": true
+              },
+              {
+                "label": "固定宽度圆珠笔",
+                "value": "monoline_pen",
+                "description": "不受压力影响，适合公式和小字。"
+              },
+              {
+                "label": "荧光笔",
+                "value": "highlighter",
+                "description": "半透明混合，可穿过已有笔迹。"
+              },
+              {
+                "label": "压力曲线可调",
+                "value": "pressure_curve",
+                "description": "允许调节压力到宽度的映射曲线。"
+              },
+              {
+                "label": "笔迹稳定或平滑强度可调",
+                "value": "stroke_smoothing",
+                "description": "改变采样滤波、流线和平滑参数。"
+              },
+              {
+                "label": "悬停光标预览",
+                "value": "hover_cursor",
+                "description": "笔未接触屏幕时显示落笔位置和笔宽。"
+              },
+              {
+                "label": "侧键临时切换橡皮擦",
+                "value": "barrel_button_eraser",
+                "description": "按住切换、松开恢复原工具。"
+              },
+              {
+                "label": "双击或手势切换工具",
+                "value": "stylus_gesture_switch",
+                "description": "利用设备实际支持的手写笔事件切换工具。"
+              },
+              {
+                "label": "手指只负责平移和缩放",
+                "value": "finger_navigation_only",
+                "description": "手写笔绘制，手指不产生笔迹。"
+              },
+              {
+                "label": "允许手指绘制模式",
+                "value": "optional_finger_drawing",
+                "description": "设置中可临时开启。"
+              }
+            ],
+            "allow_other": true
+          },
+          {
+            "id": "hybrid_document_semantics",
+            "header": "文档模型",
+            "question": "分页与无限画布应如何共存？",
+            "description": "这会决定坐标系、页面裁剪、导出、导航和缓存分块方式。",
+            "type": "single_select",
+            "required": true,
+            "options": [
+              {
+                "label": "每个文档创建时二选一",
+                "value": "mode_per_document",
+                "description": "分页文档与无限文档共享元素内核，但交互模式固定，复杂度最低。",
+                "recommended": true
+              },
+              {
+                "label": "无限画布中放置页面框",
+                "value": "frames_in_infinite_world",
+                "description": "页面只是世界坐标中的特殊对象，允许页外书写和跨页元素。"
+              },
+              {
+                "label": "分页文档可随时扩展为无限画布",
+                "value": "paged_to_infinite",
+                "description": "默认分页，需要时解除边界，转换后仍保留页面框。"
+              },
+              {
+                "label": "同一文档内存在分页区和自由画布区",
+                "value": "mixed_regions",
+                "description": "能力最强，但导航、导出和选择规则明显更复杂。"
+              }
+            ],
+            "allow_other": true
+          },
+          {
+            "id": "editing_semantics",
+            "header": "编辑规则",
+            "question": "第一版必须支持哪些编辑语义？",
+            "description": "最多选择 7 项。不同橡皮擦和选择语义会显著改变空间索引、几何运算和撤销模型。",
+            "type": "multi_select",
+            "required": true,
+            "min_selections": 2,
+            "max_selections": 7,
+            "options": [
+              {
+                "label": "整笔画橡皮擦",
+                "value": "stroke_eraser",
+                "description": "触碰任意位置即删除整条笔画，性能和实现最可控。",
+                "recommended": true
+              },
+              {
+                "label": "局部像素式橡皮擦",
+                "value": "partial_eraser",
+                "description": "切割笔画并保留未擦除部分，需要可靠的曲线分割。"
+              },
+              {
+                "label": "自由套索选择",
+                "value": "freeform_lasso",
+                "description": "按闭合路径选择相交或包含的元素。"
+              },
+              {
+                "label": "矩形框选",
+                "value": "rectangle_selection",
+                "description": "简单且可预测的批量选择。"
+              },
+              {
+                "label": "选区移动",
+                "value": "selection_translate",
+                "description": "平移所选笔画并更新空间索引。"
+              },
+              {
+                "label": "选区缩放",
+                "value": "selection_scale",
+                "description": "统一缩放坐标与笔宽。"
+              },
+              {
+                "label": "选区旋转",
+                "value": "selection_rotate",
+                "description": "对所选元素施加旋转变换。"
+              },
+              {
+                "label": "复制、剪切和粘贴",
+                "value": "clipboard_operations",
+                "description": "优先支持应用内部剪贴板。"
+              },
+              {
+                "label": "按一次落笔作为一个撤销单位",
+                "value": "stroke_level_undo",
+                "description": "每条完整笔画对应一个历史命令。"
+              },
+              {
+                "label": "连续编辑自动合并为事务",
+                "value": "transaction_coalescing",
+                "description": "拖动、缩放等连续动作只产生一个撤销步骤。"
+              }
+            ],
+            "allow_other": true
+          },
+          {
+            "id": "performance_failure_ranking",
+            "header": "性能红线",
+            "question": "请排序最不可接受的性能问题。",
+            "description": "最多排序 6 项。排序结果将决定基准测试、性能预算和阶段验收顺序。",
+            "type": "ranking",
+            "required": true,
+            "min_ranked": 3,
+            "max_ranked": 6,
+            "options": [
+              {
+                "label": "墨迹明显落后笔尖",
+                "value": "visible_ink_lag"
+              },
+              {
+                "label": "写满一页后延迟持续增加",
+                "value": "degrades_with_strokes"
+              },
+              {
+                "label": "快速书写时丢采样点或笔画变形",
+                "value": "sample_loss"
+              },
+              {
+                "label": "缩放和平移掉帧",
+                "value": "viewport_jank"
+              },
+              {
+                "label": "橡皮擦或套索后持续卡顿",
+                "value": "post_edit_degradation"
+              },
+              {
+                "label": "撤销或重做出现长暂停",
+                "value": "undo_pause"
+              },
+              {
+                "label": "自动保存打断书写",
+                "value": "autosave_jank"
+              },
+              {
+                "label": "大型文档打开过慢",
+                "value": "slow_open"
+              },
+              {
+                "label": "长时间使用后内存不断增长",
+                "value": "memory_growth"
+              }
+            ]
+          },
+          {
+            "id": "interaction_workflow",
+            "header": "操作体验",
+            "question": "请描述你希望的软件操作方式。",
+            "description": "填写具体行为，而不是抽象风格。可参考你熟悉或反感的商业笔记软件。",
+            "type": "fill_blanks",
+            "required": true,
+            "blanks": [
+              {
+                "id": "launch_behavior",
+                "label": "启动后看到什么",
+                "placeholder": "例如直接恢复上次文档和视角，或进入极简文档列表",
+                "required": true,
+                "multiline": true,
+                "max_length": 300
+              },
+              {
+                "id": "toolbar_layout",
+                "label": "工具栏位置与形态",
+                "placeholder": "例如顶部固定、左侧竖栏、可拖动悬浮栏、自动隐藏",
+                "required": true,
+                "multiline": true,
+                "max_length": 300
+              },
+              {
+                "id": "navigation_gestures",
+                "label": "平移、缩放和翻页手势",
+                "placeholder": "例如单指平移、双指缩放、分页模式纵向连续滚动",
+                "required": true,
+                "multiline": true,
+                "max_length": 400
+              },
+              {
+                "id": "tool_switching",
+                "label": "工具切换方式",
+                "placeholder": "例如点击预设、侧键临时橡皮、长按弹出参数",
+                "required": true,
+                "multiline": true,
+                "max_length": 400
+              },
+              {
+                "id": "reference_apps",
+                "label": "最想模仿和最想避免的软件体验",
+                "placeholder": "例如喜欢 Samsung Notes 的跟手性，反感某软件工具栏层级过深",
+                "required": false,
+                "multiline": true,
+                "max_length": 700
+              }
+            ]
+          },
+          {
+            "id": "persistence_policy",
+            "header": "数据策略",
+            "question": "第一版采用哪种保存与恢复标准？",
+            "description": "你此前说明存储不是重点，但最低数据可靠性仍会影响命令系统与文件结构。",
+            "type": "single_select",
+            "required": true,
+            "options": [
+              {
+                "label": "单文件快照，定时完整保存",
+                "value": "snapshot_only",
+                "description": "实现最简单，但大型文档保存可能暂停，崩溃时可能丢失最近修改。"
+              },
+              {
+                "label": "操作日志加周期快照",
+                "value": "journal_plus_snapshot",
+                "description": "每个完成命令追加日志，后台生成快照；兼顾性能与恢复能力。",
+                "recommended": true
+              },
+              {
+                "label": "嵌入式数据库事务",
+                "value": "database_transactions",
+                "description": "元素和命令分表存储，恢复可靠，但格式和迁移更复杂。"
+              },
+              {
+                "label": "内存优先，退出时保存",
+                "value": "save_on_exit",
+                "description": "开发原型最轻量，但不适合尽早用于真实笔记。"
+              }
+            ],
+            "allow_other": true
+          },
+          {
+            "id": "development_philosophy",
+            "header": "工程取舍",
+            "question": "请填写你希望计划遵守的工程原则。",
+            "description": "这些内容会被写入需求冻结区，用于防止后续加入功能时逐渐偏离你的原始目标。",
+            "type": "fill_blanks",
+            "required": true,
+            "blanks": [
+              {
+                "id": "acceptable_prototype",
+                "label": "最早可接受的可用原型",
+                "placeholder": "例如只有无限画布、单支笔、缩放和平移，但必须极其流畅",
+                "required": true,
+                "multiline": true,
+                "max_length": 500
+              },
+              {
+                "id": "performance_vs_speed",
+                "label": "性能与开发速度冲突时如何选择",
+                "placeholder": "例如宁愿延期功能，也不接受已知线性退化路径",
+                "required": true,
+                "multiline": true,
+                "max_length": 400
+              },
+              {
+                "id": "rust_boundary",
+                "label": "Rust 应承担到什么程度",
+                "placeholder": "例如仅文档与空间索引，或连稳定渲染、几何算法也放入 Rust",
+                "required": false,
+                "multiline": true,
+                "max_length": 500
+              },
+              {
+                "id": "upstream_reuse",
+                "label": "如何看待复制或移植开源实现",
+                "placeholder": "例如允许直接移植成熟算法，但必须重构到清晰模块边界",
+                "required": false,
+                "multiline": true,
+                "max_length": 500
+              },
+              {
+                "id": "explicit_non_goals",
+                "label": "第一版明确不允许加入的内容",
+                "placeholder": "例如同步、AI、PDF、录音、协作、跨平台、动态插件",
+                "required": true,
+                "multiline": true,
+                "max_length": 700
+              },
+              {
+                "id": "commercial_software_frustrations",
+                "label": "促使你开发本项目的具体痛点",
+                "placeholder": "请写具体操作、缺失功能或长期未修复的问题，便于后续校验项目是否真正解决了动机",
+                "required": false,
+                "multiline": true,
+                "max_length": 1000
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "protocol": "chatgpt-grill-response/v1",
+        "in_reply_to": "note-dev-requirements-02",
+        "answers": [
+          {
+            "question_id": "foundation_strategy",
+            "question": "你接受哪种项目起步方式？",
+            "type": "single_select",
+            "values": [
+              "butterfly_mainline"
+            ],
+            "labels": [
+              "以 Butterfly 为主仓库逐步重构"
+            ]
+          },
+          {
+            "question_id": "writing_tools",
+            "question": "第一版必须具备哪些笔与输入行为？",
+            "type": "multi_select",
+            "values": [
+              "pressure_pen",
+              "stroke_smoothing",
+              "barrel_button_eraser",
+              "finger_navigation_only"
+            ],
+            "labels": [
+              "单一压力钢笔",
+              "笔迹稳定或平滑强度可调",
+              "侧键临时切换橡皮擦",
+              "手指只负责平移和缩放"
+            ]
+          },
+          {
+            "question_id": "hybrid_document_semantics",
+            "question": "分页与无限画布应如何共存？",
+            "type": "single_select",
+            "values": [
+              "mode_per_document"
+            ],
+            "labels": [
+              "每个文档创建时二选一"
+            ]
+          },
+          {
+            "question_id": "editing_semantics",
+            "question": "第一版必须支持哪些编辑语义？",
+            "type": "multi_select",
+            "values": [
+              "stroke_eraser",
+              "partial_eraser",
+              "freeform_lasso",
+              "selection_translate",
+              "stroke_level_undo"
+            ],
+            "labels": [
+              "整笔画橡皮擦",
+              "局部像素式橡皮擦",
+              "自由套索选择",
+              "选区移动",
+              "按一次落笔作为一个撤销单位"
+            ],
+            "other": "其余选项也逐步实现，只是本轮不实现"
+          },
+          {
+            "question_id": "performance_failure_ranking",
+            "question": "请排序最不可接受的性能问题。",
+            "type": "ranking",
+            "ranking": [
+              {
+                "rank": 1,
+                "value": "visible_ink_lag",
+                "label": "墨迹明显落后笔尖"
+              },
+              {
+                "rank": 2,
+                "value": "sample_loss",
+                "label": "快速书写时丢采样点或笔画变形"
+              },
+              {
+                "rank": 3,
+                "value": "degrades_with_strokes",
+                "label": "写满一页后延迟持续增加"
+              },
+              {
+                "rank": 4,
+                "value": "viewport_jank",
+                "label": "缩放和平移掉帧"
+              },
+              {
+                "rank": 5,
+                "value": "post_edit_degradation",
+                "label": "橡皮擦或套索后持续卡顿"
+              },
+              {
+                "rank": 6,
+                "value": "undo_pause",
+                "label": "撤销或重做出现长暂停"
+              }
+            ],
+            "unranked_values": [
+              "autosave_jank",
+              "slow_open",
+              "memory_growth"
+            ]
+          },
+          {
+            "question_id": "interaction_workflow",
+            "question": "请描述你希望的软件操作方式。",
+            "type": "fill_blanks",
+            "fields": [
+              {
+                "id": "launch_behavior",
+                "label": "启动后看到什么",
+                "value": "直接恢复"
+              },
+              {
+                "id": "toolbar_layout",
+                "label": "工具栏位置与形态",
+                "value": "参考成熟商业产品的思路（仅参考思路）"
+              },
+              {
+                "id": "navigation_gestures",
+                "label": "平移、缩放和翻页手势",
+                "value": "参考成熟商业产品的思路（仅参考思路）"
+              },
+              {
+                "id": "tool_switching",
+                "label": "工具切换方式",
+                "value": "参考成熟商业产品的思路（仅参考思路）"
+              },
+              {
+                "id": "reference_apps",
+                "label": "最想模仿和最想避免的软件体验",
+                "value": "Notein"
+              }
+            ]
+          },
+          {
+            "question_id": "persistence_policy",
+            "question": "第一版采用哪种保存与恢复标准？",
+            "type": "single_select",
+            "values": [
+              "database_transactions"
+            ],
+            "labels": [
+              "嵌入式数据库事务"
+            ]
+          },
+          {
+            "question_id": "development_philosophy",
+            "question": "请填写你希望计划遵守的工程原则。",
+            "type": "fill_blanks",
+            "fields": [
+              {
+                "id": "acceptable_prototype",
+                "label": "最早可接受的可用原型",
+                "value": "只有无限画布，单只笔，基础的写和擦操作"
+              },
+              {
+                "id": "performance_vs_speed",
+                "label": "性能与开发速度冲突时如何选择",
+                "value": "性能优先"
+              },
+              {
+                "id": "rust_boundary",
+                "label": "Rust 应承担到什么程度",
+                "value": "Rust成为主要后端承担"
+              },
+              {
+                "id": "upstream_reuse",
+                "label": "如何看待复制或移植开源实现",
+                "value": "以butterfly为例：先fork完整代码，然后保留功能的情况下重构前后端，验证软件行为不变，然后替换后端"
+              },
+              {
+                "id": "explicit_non_goals",
+                "label": "第一版明确不允许加入的内容",
+                "value": "无"
+              },
+              {
+                "id": "commercial_software_frustrations",
+                "label": "促使你开发本项目的具体痛点",
+                "value": "Notein虽然功能齐全，但是长期使用非常卡顿。我想在保留我常用功能的情况下优化性能"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "derived_scope": {
+    "release": "personal_only",
+    "target_device": {
+      "model": "OPPO Pad 4 Pro",
+      "android": "16",
+      "refresh_hz": 120,
+      "stylus": "OPPO Pencil 2",
+      "secondary_devices": false
+    },
+    "foundation": "Fork Butterfly and gradually refactor while preserving behavior; Rust becomes authoritative backend after shadow verification.",
+    "v1_features": [
+      "per-document infinite or paged mode",
+      "single pressure pen",
+      "adjustable smoothing/stabilization",
+      "finger navigation only",
+      "stylus shortcut temporary eraser when hardware exposes press/release semantics",
+      "whole-stroke eraser",
+      "partial eraser",
+      "freeform lasso",
+      "selection translation",
+      "stroke-level undo",
+      "direct resume",
+      "embedded transactional database"
+    ],
+    "prototype_floor": "infinite canvas + one pen + basic write/erase",
+    "performance_priority": [
+      "visible ink lag",
+      "sample loss/distortion",
+      "degradation with stroke count",
+      "viewport jank",
+      "post-edit degradation",
+      "undo pause"
+    ],
+    "engineering_constraints": [
+      "performance before delivery speed",
+      "avoid tightly coupled modules",
+      "avoid excessive defensive fallbacks",
+      "internal registry rather than dynamic third-party plugins"
+    ],
+    "scope_interpretation": "The answer 'no explicit non-goals' does not make every feature part of V1. Unselected features are deferred rather than permanently rejected. V1 remains limited to the selected near-first-version functions."
+  }
+}

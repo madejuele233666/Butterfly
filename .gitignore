@@ -1,0 +1,44 @@
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+local.properties
+key.properties
+*.jks
+*.keystore
+
+# Dart and Flutter generated files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+pubspec_overrides.yaml
+
+# Android and native build outputs
+.gradle/
+.cxx/
+captures/
+*.apk
+*.aab
+
+# Rust build outputs
+target/
+
+# Runtime and profiling output
+*.log
+*.trace
+

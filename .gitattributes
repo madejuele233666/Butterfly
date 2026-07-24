@@ -1,0 +1,25 @@
+* text=auto
+
+*.md text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.rs text eol=lf
+*.dart text eol=lf
+*.kt text eol=lf
+*.kts text eol=lf
+*.sql text eol=lf
+*.csv text eol=lf
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.apk binary
+*.aab binary
+
