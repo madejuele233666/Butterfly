@@ -20,6 +20,7 @@ $AndroidStudio = Join-Path $MirrorRoot "toolchains\AndroidStudio"
 $Flutter = Join-Path $FlutterRoot "bin\flutter.bat"
 $Dart = Join-Path $FlutterRoot "bin\dart.bat"
 $Adb = Join-Path $AndroidSdk "platform-tools\adb.exe"
+$WindowsRoot = if ($env:SystemRoot) { $env:SystemRoot } else { "C:\Windows" }
 
 $GitDirectory = @(
     "D:\install_software\Git\cmd",
@@ -37,7 +38,7 @@ $env:ANDROID_SDK_ROOT = $AndroidSdk
 $env:ANDROID_AVD_HOME = Join-Path $MirrorRoot "avd"
 $env:JAVA_HOME = Join-Path $AndroidStudio "jbr"
 $env:Path = @(
-    "$env:SystemRoot\System32",
+    "$WindowsRoot\System32",
     $GitDirectory,
     (Join-Path $FlutterRoot "bin"),
     (Join-Path $AndroidSdk "platform-tools"),
@@ -55,7 +56,7 @@ function Invoke-Checked {
         if ($_ -match '[\s"]') { '"{0}"' -f ($_ -replace '"', '\"') } else { $_ }
     }
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-    $startInfo.FileName = "$env:SystemRoot\System32\cmd.exe"
+    $startInfo.FileName = "$WindowsRoot\System32\cmd.exe"
     $startInfo.Arguments = '/d /s /c ""{0}" {1}"' -f $Program, ($quotedArguments -join ' ')
     $startInfo.WorkingDirectory = $AppRoot
     $startInfo.UseShellExecute = $false
