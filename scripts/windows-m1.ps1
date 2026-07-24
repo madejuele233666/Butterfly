@@ -51,9 +51,30 @@ Set-Location $AppRoot
 function Invoke-Checked {
     param([string]$Program, [string[]]$Arguments, [string]$LogName)
     $log = Join-Path $EvidenceDirectory $LogName
-    & $Program @Arguments 2>&1 | Tee-Object -FilePath $log
-    if ($LASTEXITCODE -ne 0) {
-        throw "$Program failed with exit code $LASTEXITCODE. See $log"
+    $quotedArguments = $Arguments | ForEach-Object {
+        if ($_ -match '[\s"]') { '"{0}"' -f ($_ -replace '"', '\"') } else { $_ }
+    }
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $startInfo.FileName = "$env:SystemRoot\System32\cmd.exe"
+    $startInfo.Arguments = '/d /s /c ""{0}" {1}"' -f $Program, ($quotedArguments -join ' ')
+    $startInfo.WorkingDirectory = $AppRoot
+    $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $startInfo.CreateNoWindow = $true
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $startInfo
+    if (-not $process.Start()) { throw "Unable to start $Program" }
+    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $stderrTask = $process.StandardError.ReadToEndAsync()
+    $process.WaitForExit()
+    $stdout = $stdoutTask.Result
+    $stderr = $stderrTask.Result
+    [System.IO.File]::WriteAllText($log, $stdout + $stderr)
+    if ($stdout) { Write-Host $stdout.TrimEnd() }
+    if ($stderr) { Write-Host $stderr.TrimEnd() }
+    if ($process.ExitCode -ne 0) {
+        throw "$Program failed with exit code $($process.ExitCode). See $log"
     }
 }
 
@@ -109,8 +130,23 @@ switch ($Action) {
         $remote = (& $Adb -s $Device shell run-as dev.linwood.butterfly.dev.debug sh -c 'ls -1t files/app_flutter/m1-probe/*.jsonl | head -n 1').Trim()
         if (-not $remote) { throw "No exported M1 JSONL file was found." }
         $target = Join-Path $EvidenceDirectory (Split-Path $remote -Leaf)
-        $bytes = & $Adb -s $Device exec-out run-as dev.linwood.butterfly.dev.debug cat $remote
-        [System.IO.File]::WriteAllLines($target, $bytes)
+        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $startInfo.FileName = $Adb
+        $startInfo.Arguments = "-s $Device exec-out run-as dev.linwood.butterfly.dev.debug cat $remote"
+        $startInfo.UseShellExecute = $false
+        $startInfo.RedirectStandardOutput = $true
+        $startInfo.CreateNoWindow = $true
+        $process = [System.Diagnostics.Process]::Start($startInfo)
+        $stream = [System.IO.File]::Create($target)
+        try {
+            $process.StandardOutput.BaseStream.CopyTo($stream)
+            $process.WaitForExit()
+            $pullExitCode = $process.ExitCode
+        } finally {
+            $stream.Dispose()
+            $process.Dispose()
+        }
+        if ($pullExitCode -ne 0) { throw "Unable to pull M1 JSONL." }
         Write-Host "Pulled $remote to $target"
     }
     "perfetto" {
