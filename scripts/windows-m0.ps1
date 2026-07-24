@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("doctor", "test", "build-debug", "build-release", "clean-android", "devices")]
+    [ValidateSet("doctor", "test", "build-debug", "build-profile", "build-release", "clean-android", "devices")]
     [string]$Action,
     [string]$EvidenceDirectory = "D:\files\Notea_Mirror\evidence"
 )

@@ -34,11 +34,12 @@ if errorlevel 1 exit /b %ERRORLEVEL%
 if /i "%~1"=="doctor" goto doctor
 if /i "%~1"=="test" goto test
 if /i "%~1"=="build-debug" goto build_debug
+if /i "%~1"=="build-profile" goto build_profile
 if /i "%~1"=="build-release" goto build_release
 if /i "%~1"=="clean-android" goto clean_android
 if /i "%~1"=="devices" goto devices
 
-echo Usage: %~nx0 doctor^|test^|build-debug^|build-release^|clean-android^|devices 1>&2
+echo Usage: %~nx0 doctor^|test^|build-debug^|build-profile^|build-release^|clean-android^|devices 1>&2
 exit /b 2
 
 :doctor
@@ -65,6 +66,14 @@ exit /b %BUILD_EXIT%
 call :prepare_evidence "%~2"
 set "BUILD_LOG=%EVIDENCE%\flutter-build-release-%STAMP%.log"
 call "%FLUTTER%" build apk --release --flavor production --no-pub > "%BUILD_LOG%" 2>&1
+set "BUILD_EXIT=%ERRORLEVEL%"
+type "%BUILD_LOG%"
+exit /b %BUILD_EXIT%
+
+:build_profile
+call :prepare_evidence "%~2"
+set "BUILD_LOG=%EVIDENCE%\flutter-build-profile-%STAMP%.log"
+call "%FLUTTER%" build apk --profile --flavor production --no-pub > "%BUILD_LOG%" 2>&1
 set "BUILD_EXIT=%ERRORLEVEL%"
 type "%BUILD_LOG%"
 exit /b %BUILD_EXIT%
