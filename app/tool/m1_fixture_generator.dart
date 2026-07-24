@@ -17,11 +17,13 @@ final class DeterministicRandom {
   double unit() => next() / 0xffffffff;
 }
 
-int fnv1a64(Uint8List bytes) {
-  var hash = 0xcbf29ce484222325;
+BigInt fnv1a64(Uint8List bytes) {
+  final mask = (BigInt.one << 64) - BigInt.one;
+  final prime = BigInt.parse('100000001b3', radix: 16);
+  var hash = BigInt.parse('cbf29ce484222325', radix: 16);
   for (final byte in bytes) {
-    hash ^= byte;
-    hash = (hash * 0x100000001b3) & 0xffffffffffffffff;
+    hash ^= BigInt.from(byte);
+    hash = (hash * prime) & mask;
   }
   return hash;
 }
@@ -105,9 +107,7 @@ void main(List<String> args) {
     (manifest['fixtures']! as Map<String, Object?>)[entry.key] = {
       'path': file.path,
       'bytes': entry.value.length,
-      'fnv1a64': fnv1a64(
-        entry.value,
-      ).toUnsigned(64).toRadixString(16).padLeft(16, '0'),
+      'fnv1a64': fnv1a64(entry.value).toRadixString(16).padLeft(16, '0'),
     };
   }
   File('${output.path}/manifest.json').writeAsStringSync(
