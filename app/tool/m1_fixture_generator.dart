@@ -105,7 +105,9 @@ void main(List<String> args) {
     (manifest['fixtures']! as Map<String, Object?>)[entry.key] = {
       'path': file.path,
       'bytes': entry.value.length,
-      'fnv1a64': fnv1a64(entry.value).toRadixString(16).padLeft(16, '0'),
+      'fnv1a64': fnv1a64(
+        entry.value,
+      ).toUnsigned(64).toRadixString(16).padLeft(16, '0'),
     };
   }
   File('${output.path}/manifest.json').writeAsStringSync(
