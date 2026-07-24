@@ -4,8 +4,7 @@ import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // The Flutter Gradle Plugin must be applied after the Android Gradle plugin.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
@@ -18,7 +17,8 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "dev.linwood.butterfly"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // irondash_engine_context requires NDK 29; use the installed newer revision.
+    ndkVersion = "29.0.14206865"
 
     // Flutter-friendly toggles:
     // - Env: USE_LEGACY_PACKAGING=true
