@@ -27,9 +27,9 @@ Notea 是一个面向 Android 平板与手写笔的高性能笔记项目，以 B
 - [分步执行包](docs/ANDROID_NOTE_EXECUTION_PLAN_V1_1_0/README.md)
 - [冻结项目基线](docs/project-baseline/README.md)
 - [M0：工具链与不可变 Butterfly 基线](docs/ANDROID_NOTE_EXECUTION_PLAN_V1_1_0/01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/EXECUTE.md)
+- [WSL / Windows 双环境与同步协议](docs/development/DUAL_ENVIRONMENT.md)
 - [Butterfly 上游项目](https://github.com/LinwoodDev/Butterfly)
 
 ## 许可证与来源
 
 产品代码继承 Butterfly 的许可证边界：主体代码为 AGPL-3.0，`api/` 为 Apache-2.0，图像与上游文档受 `BRANDING_LICENSE` 约束。Notea 的冻结需求和执行记录不改变这些上游许可声明。
-
