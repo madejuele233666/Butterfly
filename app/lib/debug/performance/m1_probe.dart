@@ -37,9 +37,9 @@ class M1ProbeController extends ChangeNotifier {
 
   Future<void> start() async {
     if (!m1ProbeEnabled) return;
-    _nativeStatus = _map(await _channel.invokeMethod<Object?>('start', {
-      'capacity': _capacity,
-    }));
+    _nativeStatus = _map(
+      await _channel.invokeMethod<Object?>('start', {'capacity': _capacity}),
+    );
     if (!_running) {
       WidgetsBinding.instance.addTimingsCallback(_captureFrames);
     }
@@ -49,9 +49,7 @@ class M1ProbeController extends ChangeNotifier {
 
   Future<void> stop() async {
     if (!m1ProbeEnabled) return;
-    _nativeStatus = _map(
-      await _channel.invokeMethod<Object?>('stop'),
-    );
+    _nativeStatus = _map(await _channel.invokeMethod<Object?>('stop'));
     if (_running) {
       WidgetsBinding.instance.removeTimingsCallback(_captureFrames);
     }
@@ -63,18 +61,14 @@ class M1ProbeController extends ChangeNotifier {
     _flutterRecords.clear();
     _lastExportPath = null;
     if (m1ProbeEnabled) {
-      _nativeStatus = _map(
-        await _channel.invokeMethod<Object?>('reset'),
-      );
+      _nativeStatus = _map(await _channel.invokeMethod<Object?>('reset'));
     }
     notifyListeners();
   }
 
   Future<void> refreshStatus() async {
     if (!m1ProbeEnabled) return;
-    _nativeStatus = _map(
-      await _channel.invokeMethod<Object?>('status'),
-    );
+    _nativeStatus = _map(await _channel.invokeMethod<Object?>('status'));
     notifyListeners();
   }
 
@@ -160,7 +154,7 @@ class M1ProbeController extends ChangeNotifier {
       if (chunk.length < 1024) break;
     }
     final now = DateTime.now().toUtc();
-    final sessionId = 'm1-${now.toIso8601String().replaceAll(':', '-')}' ;
+    final sessionId = 'm1-${now.toIso8601String().replaceAll(':', '-')}';
     final header = jsonEncode({
       'schema': 'notea.m1.session/v1',
       'sessionId': sessionId,

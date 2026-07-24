@@ -1272,280 +1272,280 @@ class CurrentIndexCubit extends Cubit<CurrentIndex> {
   }) => M1Trace.async(
     M1TraceName.viewportBake,
     () => _bakeLock.synchronized(() async {
-    if (isClosed) return;
-    var cameraViewport = state.cameraViewport;
-    final startTransform = state.transformCubit.state;
-    final startViewport = cameraViewport;
-    final resolution = state.settingsCubit.state.renderResolution;
-    var size = viewportSize ?? cameraViewport.toSize();
-    final ratio = pixelRatio ?? cameraViewport.pixelRatio;
-    if (size.height <= 0 || size.width <= 0) {
-      return;
-    }
-    if (viewportSize == null) {
-      size /= resolution.multiplier;
-    }
-    var transform = state.transformCubit.state;
-    var renderers = List<Renderer<PadElement>>.from(this.renderers);
-    final recorder = ui.PictureRecorder();
-    final canvas = ui.Canvas(recorder);
-    final rect = getViewportRect(viewportSize: size);
-    size = rect.size * transform.size;
-    final renderTransform = transform.improve(resolution, rect);
-    final document = blocState.data;
-    final page = blocState.page;
-    final info = blocState.info;
-    final imageWidth = (size.width * ratio).ceil();
-    final imageHeight = (size.height * ratio).ceil();
-    var allRendererStates = state.allRendererStates;
-    final rendererStatesChanged = !mapEquals(
-      allRendererStates,
-      cameraViewport.rendererStates,
-    );
-    if (!rendererStatesChanged) {
-      allRendererStates = cameraViewport.rendererStates;
-    }
-    final invisibleLayers = blocState.invisibleLayers;
-    final viewportAlreadyCoversRect =
-        cameraViewport.image != null &&
-        cameraViewport.scale == transform.size &&
-        cameraViewport.resolution == resolution &&
-        cameraViewport.pixelRatio == ratio &&
-        !rendererStatesChanged &&
-        setEquals(cameraViewport.invisibleLayers, invisibleLayers) &&
-        _rectContains(cameraViewport.toRect(), rect);
-    final viewChanged =
-        !viewportAlreadyCoversRect &&
-        (cameraViewport.width != size.width.ceil() ||
-            cameraViewport.height != size.height.ceil() ||
-            cameraViewport.pixelRatio != ratio ||
-            cameraViewport.resolution != resolution ||
-            cameraViewport.x != renderTransform.position.dx ||
-            cameraViewport.y != renderTransform.position.dy ||
-            cameraViewport.scale != transform.size ||
-            rendererStatesChanged ||
-            !setEquals(cameraViewport.invisibleLayers, invisibleLayers));
-    reset = reset || viewChanged;
-    resetAllLayers = resetAllLayers || viewChanged;
-    if (cameraViewport.unbakedElements.isEmpty && !reset) return;
-    final currentLayer = blocState.currentLayer;
-    List<Renderer<PadElement>> visibleElements;
-    final oldVisible = cameraViewport.visibleElements;
-    final oldVisibleSet = oldVisible.toSet();
-    talker.verbose(
-      'Baking viewport (reset: $reset, viewChanged: $viewChanged, '
-      'rendererStatesChanged: $rendererStatesChanged)',
-    );
+      if (isClosed) return;
+      var cameraViewport = state.cameraViewport;
+      final startTransform = state.transformCubit.state;
+      final startViewport = cameraViewport;
+      final resolution = state.settingsCubit.state.renderResolution;
+      var size = viewportSize ?? cameraViewport.toSize();
+      final ratio = pixelRatio ?? cameraViewport.pixelRatio;
+      if (size.height <= 0 || size.width <= 0) {
+        return;
+      }
+      if (viewportSize == null) {
+        size /= resolution.multiplier;
+      }
+      var transform = state.transformCubit.state;
+      var renderers = List<Renderer<PadElement>>.from(this.renderers);
+      final recorder = ui.PictureRecorder();
+      final canvas = ui.Canvas(recorder);
+      final rect = getViewportRect(viewportSize: size);
+      size = rect.size * transform.size;
+      final renderTransform = transform.improve(resolution, rect);
+      final document = blocState.data;
+      final page = blocState.page;
+      final info = blocState.info;
+      final imageWidth = (size.width * ratio).ceil();
+      final imageHeight = (size.height * ratio).ceil();
+      var allRendererStates = state.allRendererStates;
+      final rendererStatesChanged = !mapEquals(
+        allRendererStates,
+        cameraViewport.rendererStates,
+      );
+      if (!rendererStatesChanged) {
+        allRendererStates = cameraViewport.rendererStates;
+      }
+      final invisibleLayers = blocState.invisibleLayers;
+      final viewportAlreadyCoversRect =
+          cameraViewport.image != null &&
+          cameraViewport.scale == transform.size &&
+          cameraViewport.resolution == resolution &&
+          cameraViewport.pixelRatio == ratio &&
+          !rendererStatesChanged &&
+          setEquals(cameraViewport.invisibleLayers, invisibleLayers) &&
+          _rectContains(cameraViewport.toRect(), rect);
+      final viewChanged =
+          !viewportAlreadyCoversRect &&
+          (cameraViewport.width != size.width.ceil() ||
+              cameraViewport.height != size.height.ceil() ||
+              cameraViewport.pixelRatio != ratio ||
+              cameraViewport.resolution != resolution ||
+              cameraViewport.x != renderTransform.position.dx ||
+              cameraViewport.y != renderTransform.position.dy ||
+              cameraViewport.scale != transform.size ||
+              rendererStatesChanged ||
+              !setEquals(cameraViewport.invisibleLayers, invisibleLayers));
+      reset = reset || viewChanged;
+      resetAllLayers = resetAllLayers || viewChanged;
+      if (cameraViewport.unbakedElements.isEmpty && !reset) return;
+      final currentLayer = blocState.currentLayer;
+      List<Renderer<PadElement>> visibleElements;
+      final oldVisible = cameraViewport.visibleElements;
+      final oldVisibleSet = oldVisible.toSet();
+      talker.verbose(
+        'Baking viewport (reset: $reset, viewChanged: $viewChanged, '
+        'rendererStatesChanged: $rendererStatesChanged)',
+      );
 
-    if (reset) {
-      visibleElements = renderers
-          .where((renderer) => renderer.isVisible(rect))
-          .toList();
-    } else {
-      visibleElements = List.from(oldVisible)
-        ..addAll(
-          cameraViewport.unbakedElements.where(
-            (renderer) =>
-                !oldVisibleSet.contains(renderer) && renderer.isVisible(rect),
+      if (reset) {
+        visibleElements = renderers
+            .where((renderer) => renderer.isVisible(rect))
+            .toList();
+      } else {
+        visibleElements = List.from(oldVisible)
+          ..addAll(
+            cameraViewport.unbakedElements.where(
+              (renderer) =>
+                  !oldVisibleSet.contains(renderer) && renderer.isVisible(rect),
+            ),
+          );
+      }
+
+      final visibleElementsSet = visibleElements.toSet();
+
+      await _updateOnVisible(
+        cameraViewport.unbake(visibleElements: visibleElements),
+        blocState,
+        renderTransform: renderTransform,
+        targetSize: size,
+      );
+
+      canvas.scale(ratio);
+
+      if (viewChanged && visibleElements.isNotEmpty) {
+        await Future.wait(
+          visibleElements.map(
+            (e) async =>
+                await e.updateView(this, blocState, renderTransform, size),
           ),
         );
-    }
+      }
 
-    final visibleElementsSet = visibleElements.toSet();
+      // Wait one frame
+      await Future.delayed(const Duration(milliseconds: 1));
 
-    await _updateOnVisible(
-      cameraViewport.unbake(visibleElements: visibleElements),
-      blocState,
-      renderTransform: renderTransform,
-      targetSize: size,
-    );
+      ViewPainter(
+        document,
+        page,
+        info,
+        transform: renderTransform,
+        cameraViewport: reset
+            ? cameraViewport.unbake(
+                rendererStates: allRendererStates,
+                unbakedElements: visibleElements
+                    .where((e) => currentLayer == e.layer)
+                    .toList(),
+                visibleElements: visibleElements,
+              )
+            : cameraViewport,
+        renderBackground: false,
+        renderBaked: !reset,
+        renderBakedLayers: false,
+        invisibleLayers: invisibleLayers,
+      ).paint(canvas, size);
 
-    canvas.scale(ratio);
+      final picture = recorder.endRecording();
+      ui.Image newImage;
+      try {
+        newImage = await picture.toImage(imageWidth, imageHeight);
+      } finally {
+        picture.dispose();
+      }
 
-    if (viewChanged && visibleElements.isNotEmpty) {
-      await Future.wait(
-        visibleElements.map(
-          (e) async =>
-              await e.updateView(this, blocState, renderTransform, size),
+      var belowLayerImage = cameraViewport.belowLayerImage;
+      var aboveLayerImage = cameraViewport.aboveLayerImage;
+
+      if (resetAllLayers) {
+        final belowLayerRecorder = ui.PictureRecorder();
+        final belowLayerCanvas = ui.Canvas(belowLayerRecorder);
+        belowLayerCanvas.scale(ratio);
+        final aboveLayerRecorder = ui.PictureRecorder();
+        final aboveLayerCanvas = ui.Canvas(aboveLayerRecorder);
+        aboveLayerCanvas.scale(ratio);
+        final belowLayers = [], aboveLayers = [];
+        bool above = false;
+        for (final layer in page.layers) {
+          if (layer.id == currentLayer) {
+            above = true;
+            continue;
+          }
+          if (above) {
+            aboveLayers.add(layer.id);
+          } else {
+            belowLayers.add(layer.id);
+          }
+        }
+
+        ViewPainter(
+          document,
+          page,
+          info,
+          transform: renderTransform,
+          cameraViewport: cameraViewport.unbake(
+            rendererStates: allRendererStates,
+            unbakedElements: visibleElements
+                .where((e) => belowLayers.contains(e.layer))
+                .toList(),
+            visibleElements: visibleElements,
+          ),
+          renderBackground: false,
+          renderBaked: false,
+          invisibleLayers: invisibleLayers,
+        ).paint(belowLayerCanvas, size);
+        ViewPainter(
+          document,
+          page,
+          info,
+          transform: renderTransform,
+          cameraViewport: cameraViewport.unbake(
+            rendererStates: allRendererStates,
+            unbakedElements: visibleElements
+                .where((e) => aboveLayers.contains(e.layer))
+                .toList(),
+            visibleElements: visibleElements,
+          ),
+          renderBackground: false,
+          renderBaked: false,
+          invisibleLayers: invisibleLayers,
+        ).paint(aboveLayerCanvas, size);
+
+        final belowPicture = belowLayerRecorder.endRecording();
+        final abovePicture = aboveLayerRecorder.endRecording();
+        try {
+          final result = await Future.wait([
+            belowPicture.toImage(imageWidth, imageHeight),
+            abovePicture.toImage(imageWidth, imageHeight),
+          ]);
+          belowLayerImage = result[0];
+          aboveLayerImage = result[1];
+        } finally {
+          belowPicture.dispose();
+          abovePicture.dispose();
+        }
+      }
+
+      final bakedElementsSet = cameraViewport.bakedElements
+          .map((e) => e.element)
+          .toSet();
+      final unbakedElementsSet = cameraViewport.unbakedElements
+          .map((e) => e.element)
+          .toSet();
+
+      final newlyUnbaked =
+          (reset ? this.renderers : state.cameraViewport.unbakedElements)
+              .where(
+                (element) =>
+                    !bakedElementsSet.contains(element.element) &&
+                    !unbakedElementsSet.contains(element.element) &&
+                    !visibleElementsSet.contains(element),
+              )
+              .toList();
+
+      if (isClosed) return;
+
+      // If state changed while baking (e.g. fast move submitted a newer viewport),
+      // this bake output is stale and must not overwrite the latest viewport.
+      final currentViewport = state.cameraViewport;
+      final currentTransform = state.transformCubit.state;
+      if (!identical(currentViewport, startViewport) ||
+          currentTransform != startTransform) {
+        newImage.dispose();
+        final oldBelow = startViewport.belowLayerImage;
+        final oldAbove = startViewport.aboveLayerImage;
+        if (!identical(belowLayerImage, oldBelow)) {
+          belowLayerImage?.dispose();
+        }
+        if (!identical(aboveLayerImage, oldAbove)) {
+          aboveLayerImage?.dispose();
+        }
+        Future.microtask(() async {
+          final latestState = _documentState?.call();
+          if (latestState == null) return;
+          await bake(
+            latestState,
+            viewportSize: viewportSize,
+            pixelRatio: pixelRatio,
+            reset: reset,
+            resetAllLayers: resetAllLayers,
+          );
+        });
+        return;
+      }
+
+      emit(
+        state.copyWith(
+          cameraViewport: cameraViewport.bake(
+            height: size.height,
+            width: size.width,
+            pixelRatio: ratio,
+            resolution: resolution,
+            scale: transform.size,
+            x: renderTransform.position.dx,
+            y: renderTransform.position.dy,
+            image: newImage,
+            bakedElements: renderers,
+            unbakedElements: newlyUnbaked,
+            visibleElements: visibleElements,
+            visibleUnbakedElements: newlyUnbaked
+                .where((renderer) => renderer.isVisible(rect))
+                .toList(),
+            belowLayerImage: belowLayerImage,
+            aboveLayerImage: aboveLayerImage,
+            rendererStates: allRendererStates,
+            invisibleLayers: invisibleLayers,
+          ),
         ),
       );
-    }
-
-    // Wait one frame
-    await Future.delayed(const Duration(milliseconds: 1));
-
-    ViewPainter(
-      document,
-      page,
-      info,
-      transform: renderTransform,
-      cameraViewport: reset
-          ? cameraViewport.unbake(
-              rendererStates: allRendererStates,
-              unbakedElements: visibleElements
-                  .where((e) => currentLayer == e.layer)
-                  .toList(),
-              visibleElements: visibleElements,
-            )
-          : cameraViewport,
-      renderBackground: false,
-      renderBaked: !reset,
-      renderBakedLayers: false,
-      invisibleLayers: invisibleLayers,
-    ).paint(canvas, size);
-
-    final picture = recorder.endRecording();
-    ui.Image newImage;
-    try {
-      newImage = await picture.toImage(imageWidth, imageHeight);
-    } finally {
-      picture.dispose();
-    }
-
-    var belowLayerImage = cameraViewport.belowLayerImage;
-    var aboveLayerImage = cameraViewport.aboveLayerImage;
-
-    if (resetAllLayers) {
-      final belowLayerRecorder = ui.PictureRecorder();
-      final belowLayerCanvas = ui.Canvas(belowLayerRecorder);
-      belowLayerCanvas.scale(ratio);
-      final aboveLayerRecorder = ui.PictureRecorder();
-      final aboveLayerCanvas = ui.Canvas(aboveLayerRecorder);
-      aboveLayerCanvas.scale(ratio);
-      final belowLayers = [], aboveLayers = [];
-      bool above = false;
-      for (final layer in page.layers) {
-        if (layer.id == currentLayer) {
-          above = true;
-          continue;
-        }
-        if (above) {
-          aboveLayers.add(layer.id);
-        } else {
-          belowLayers.add(layer.id);
-        }
-      }
-
-      ViewPainter(
-        document,
-        page,
-        info,
-        transform: renderTransform,
-        cameraViewport: cameraViewport.unbake(
-          rendererStates: allRendererStates,
-          unbakedElements: visibleElements
-              .where((e) => belowLayers.contains(e.layer))
-              .toList(),
-          visibleElements: visibleElements,
-        ),
-        renderBackground: false,
-        renderBaked: false,
-        invisibleLayers: invisibleLayers,
-      ).paint(belowLayerCanvas, size);
-      ViewPainter(
-        document,
-        page,
-        info,
-        transform: renderTransform,
-        cameraViewport: cameraViewport.unbake(
-          rendererStates: allRendererStates,
-          unbakedElements: visibleElements
-              .where((e) => aboveLayers.contains(e.layer))
-              .toList(),
-          visibleElements: visibleElements,
-        ),
-        renderBackground: false,
-        renderBaked: false,
-        invisibleLayers: invisibleLayers,
-      ).paint(aboveLayerCanvas, size);
-
-      final belowPicture = belowLayerRecorder.endRecording();
-      final abovePicture = aboveLayerRecorder.endRecording();
-      try {
-        final result = await Future.wait([
-          belowPicture.toImage(imageWidth, imageHeight),
-          abovePicture.toImage(imageWidth, imageHeight),
-        ]);
-        belowLayerImage = result[0];
-        aboveLayerImage = result[1];
-      } finally {
-        belowPicture.dispose();
-        abovePicture.dispose();
-      }
-    }
-
-    final bakedElementsSet = cameraViewport.bakedElements
-        .map((e) => e.element)
-        .toSet();
-    final unbakedElementsSet = cameraViewport.unbakedElements
-        .map((e) => e.element)
-        .toSet();
-
-    final newlyUnbaked =
-        (reset ? this.renderers : state.cameraViewport.unbakedElements)
-            .where(
-              (element) =>
-                  !bakedElementsSet.contains(element.element) &&
-                  !unbakedElementsSet.contains(element.element) &&
-                  !visibleElementsSet.contains(element),
-            )
-            .toList();
-
-    if (isClosed) return;
-
-    // If state changed while baking (e.g. fast move submitted a newer viewport),
-    // this bake output is stale and must not overwrite the latest viewport.
-    final currentViewport = state.cameraViewport;
-    final currentTransform = state.transformCubit.state;
-    if (!identical(currentViewport, startViewport) ||
-        currentTransform != startTransform) {
-      newImage.dispose();
-      final oldBelow = startViewport.belowLayerImage;
-      final oldAbove = startViewport.aboveLayerImage;
-      if (!identical(belowLayerImage, oldBelow)) {
-        belowLayerImage?.dispose();
-      }
-      if (!identical(aboveLayerImage, oldAbove)) {
-        aboveLayerImage?.dispose();
-      }
-      Future.microtask(() async {
-        final latestState = _documentState?.call();
-        if (latestState == null) return;
-        await bake(
-          latestState,
-          viewportSize: viewportSize,
-          pixelRatio: pixelRatio,
-          reset: reset,
-          resetAllLayers: resetAllLayers,
-        );
-      });
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        cameraViewport: cameraViewport.bake(
-          height: size.height,
-          width: size.width,
-          pixelRatio: ratio,
-          resolution: resolution,
-          scale: transform.size,
-          x: renderTransform.position.dx,
-          y: renderTransform.position.dy,
-          image: newImage,
-          bakedElements: renderers,
-          unbakedElements: newlyUnbaked,
-          visibleElements: visibleElements,
-          visibleUnbakedElements: newlyUnbaked
-              .where((renderer) => renderer.isVisible(rect))
-              .toList(),
-          belowLayerImage: belowLayerImage,
-          aboveLayerImage: aboveLayerImage,
-          rendererStates: allRendererStates,
-          invisibleLayers: invisibleLayers,
-        ),
-      ),
-    );
     }),
   );
 
@@ -2446,59 +2446,59 @@ class CurrentIndexCubit extends Cubit<CurrentIndex> {
     return M1Trace.async(
       M1TraceName.documentSave,
       () => _savingLock.synchronized(() async {
-      var current = location ?? state.location;
-      if (isClosed) {
-        return current;
-      }
-      emit(
-        state.copyWith(
-          saved: SaveState.saving,
-          location: current,
-          isSaveDelayed: false,
-        ),
-      );
-      final blocState = bloc.state;
-      final currentData = await blocState.saveData(null, state.viewOption);
-      if (isClosed) {
-        return current;
-      }
-      if (currentData == null || state.embedding != null) {
-        emit(state.copyWith(saved: SaveState.saved));
-        return AssetLocation.empty;
-      }
-      if (absolute || !(current.fileType?.isNote() ?? false)) {
-        final file = await compute(_toFile, (currentData, false));
-        final document = await fileSystem.createFileWithName(
-          name: currentData.name,
-          suffix: '.bfly',
-          directory: absolute
-              ? null
-              : current.fileExtension.isEmpty
-              ? state.location.path
-              : state.location.parent,
-          file,
+        var current = location ?? state.location;
+        if (isClosed) {
+          return current;
+        }
+        emit(
+          state.copyWith(
+            saved: SaveState.saving,
+            location: current,
+            isSaveDelayed: false,
+          ),
         );
-        current = document.location;
-      } else {
-        final file = await compute(_toFile, (
-          currentData,
-          current.fileType == AssetFileType.textNote,
-        ));
-        await fileSystem.updateFile(current.path, file);
-      }
-      state.settingsCubit.addRecentHistory(current);
-      if (isClosed) {
+        final blocState = bloc.state;
+        final currentData = await blocState.saveData(null, state.viewOption);
+        if (isClosed) {
+          return current;
+        }
+        if (currentData == null || state.embedding != null) {
+          emit(state.copyWith(saved: SaveState.saved));
+          return AssetLocation.empty;
+        }
+        if (absolute || !(current.fileType?.isNote() ?? false)) {
+          final file = await compute(_toFile, (currentData, false));
+          final document = await fileSystem.createFileWithName(
+            name: currentData.name,
+            suffix: '.bfly',
+            directory: absolute
+                ? null
+                : current.fileExtension.isEmpty
+                ? state.location.path
+                : state.location.parent,
+            file,
+          );
+          current = document.location;
+        } else {
+          final file = await compute(_toFile, (
+            currentData,
+            current.fileType == AssetFileType.textNote,
+          ));
+          await fileSystem.updateFile(current.path, file);
+        }
+        state.settingsCubit.addRecentHistory(current);
+        if (isClosed) {
+          return current;
+        }
+        emit(
+          state.copyWith(
+            saved: state.saved == SaveState.saving
+                ? SaveState.saved
+                : state.saved,
+            location: current,
+          ),
+        );
         return current;
-      }
-      emit(
-        state.copyWith(
-          saved: state.saved == SaveState.saving
-              ? SaveState.saved
-              : state.saved,
-          location: current,
-        ),
-      );
-      return current;
       }),
     );
   }

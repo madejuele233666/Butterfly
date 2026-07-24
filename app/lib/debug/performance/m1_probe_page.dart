@@ -53,9 +53,9 @@ class _M1ProbePageState extends State<M1ProbePage> {
       await action();
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.toString())));
       }
     } finally {
       if (mounted) setState(() => busy = false);
@@ -65,11 +65,7 @@ class _M1ProbePageState extends State<M1ProbePage> {
   @override
   Widget build(BuildContext context) {
     if (!m1ProbeEnabled) {
-      return const Scaffold(
-        body: Center(
-          child: Text('M1 probe 未在此构建中启用。'),
-        ),
-      );
+      return const Scaffold(body: Center(child: Text('M1 probe 未在此构建中启用。')));
     }
     final status = probe.nativeStatus;
     return Scaffold(

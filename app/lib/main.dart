@@ -417,15 +417,15 @@ class ButterflyApp extends StatelessWidget {
           }
           return M1ProbeBoundary(
             child: RepositoryProvider(
-            create: ButterflyFileSystem.build,
-            dispose: (fileSystem) => fileSystem.dispose(),
-            child: RepositoryProvider(
-              create: (context) =>
-                  SyncService(context, context.read<ButterflyFileSystem>()),
-              dispose: (service) => service.dispose(),
-              lazy: false,
-              child: _WindowCloseGuard(child: child ?? Container()),
-            ),
+              create: ButterflyFileSystem.build,
+              dispose: (fileSystem) => fileSystem.dispose(),
+              child: RepositoryProvider(
+                create: (context) =>
+                    SyncService(context, context.read<ButterflyFileSystem>()),
+                dispose: (service) => service.dispose(),
+                lazy: false,
+                child: _WindowCloseGuard(child: child ?? Container()),
+              ),
             ),
           );
         },
