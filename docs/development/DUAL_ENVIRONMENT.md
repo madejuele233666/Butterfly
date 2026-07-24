@@ -51,6 +51,7 @@ Windows 通常只需 `pull` 后执行测试；只有测试记录或 Windows 侧�
 ```powershell
 Set-Location D:\files\Notea_Mirror\workspace
 .\scripts\windows-m0.ps1 -Action doctor
+.\scripts\windows-m0.ps1 -Action pub-get
 .\scripts\windows-m0.ps1 -Action test
 .\scripts\windows-m0.ps1 -Action build-debug
 .\scripts\windows-m0.ps1 -Action build-profile
