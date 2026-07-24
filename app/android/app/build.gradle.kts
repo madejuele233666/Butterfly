@@ -34,22 +34,41 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     flavorDimensions += "default"
     productFlavors {
         create("production") {
             dimension = "default"
             applicationIdSuffix = ""
             manifestPlaceholders["appName"] = "Butterfly"
+            buildConfigField("boolean", "M1_PROBE_ENABLED", "false")
         }
         create("development") {
             dimension = "default"
-            applicationIdSuffix = ""
+            applicationIdSuffix = ".development"
             manifestPlaceholders["appName"] = "Butterfly Nightly"
+            buildConfigField("boolean", "M1_PROBE_ENABLED", "false")
         }
         create("nightly") {
             dimension = "default"
             applicationIdSuffix = ".nightly"
             manifestPlaceholders["appName"] = "Butterfly Nightly"
+            buildConfigField("boolean", "M1_PROBE_ENABLED", "false")
+        }
+        create("dev") {
+            dimension = "default"
+            applicationIdSuffix = ".dev"
+            manifestPlaceholders["appName"] = "Notea M1 Dev"
+            buildConfigField("boolean", "M1_PROBE_ENABLED", "true")
+        }
+        create("personal") {
+            dimension = "default"
+            applicationIdSuffix = ".personal"
+            manifestPlaceholders["appName"] = "Notea Personal"
+            buildConfigField("boolean", "M1_PROBE_ENABLED", "false")
         }
     }
 
@@ -79,6 +98,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            manifestPlaceholders["profileable"] = "false"
+        }
+        getByName("profile") {
+            applicationIdSuffix = ".profile"
+            manifestPlaceholders["profileable"] = "true"
+        }
         release {
             // Use your release keystore if available, fall back to debug key
             signingConfig = if (keystorePropertiesFile.exists()) {
@@ -86,6 +113,7 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            manifestPlaceholders["profileable"] = "false"
         }
     }
     dependenciesInfo {

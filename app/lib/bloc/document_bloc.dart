@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:butterfly/api/file_system.dart';
 import 'package:butterfly/cubits/current_index.dart';
+import 'package:butterfly/debug/performance/trace.dart';
 import 'package:butterfly/handlers/handler.dart';
 import 'package:butterfly/helpers/async.dart';
 import 'package:butterfly/helpers/rect.dart';
@@ -1678,14 +1679,16 @@ class DocumentBloc extends ReplayBloc<DocumentEvent, DocumentState> {
       full,
     );
 
-    // Use synchronous execution for small element counts to avoid isolate overhead
-    final Set<int> result;
-    if (renderers.length < 100) {
-      result = _executeRayCast(params);
-    } else {
-      result = await compute(_executeRayCast, params);
-    }
-    return result.map((e) => renderers[e]).toSet();
+    return M1Trace.async(M1TraceName.selectionRaycast, () async {
+      // Use synchronous execution for small element counts to avoid isolate overhead
+      final Set<int> result;
+      if (renderers.length < 100) {
+        result = _executeRayCast(params);
+      } else {
+        result = await compute(_executeRayCast, params);
+      }
+      return result.map((e) => renderers[e]).toSet();
+    });
   }
 
   Future<Set<Renderer<PadElement>>> rayCastPolygon(
@@ -1713,26 +1716,28 @@ class DocumentBloc extends ReplayBloc<DocumentEvent, DocumentState> {
       full,
     );
 
-    // Use synchronous execution for small element counts to avoid isolate overhead
-    final Set<int> result;
-    if (renderers.length < 100) {
-      result = _executeRayCastPolygon(params);
-    } else {
-      result = await compute(_executeRayCastPolygon, params);
-    }
-    return result.map((e) => renderers[e]).toSet();
+    return M1Trace.async(M1TraceName.selectionRaycast, () async {
+      // Use synchronous execution for small element counts to avoid isolate overhead
+      final Set<int> result;
+      if (renderers.length < 100) {
+        result = _executeRayCastPolygon(params);
+      } else {
+        result = await compute(_executeRayCastPolygon, params);
+      }
+      return result.map((e) => renderers[e]).toSet();
+    });
   }
 
   void sendUndo() {
     if (!(networkingService?.sendUndo() ?? false)) {
-      undo();
+      M1Trace.sync(M1TraceName.historyUndo, undo);
       _scheduleHistoryReload();
     }
   }
 
   void sendRedo() {
     if (!(networkingService?.sendRedo() ?? false)) {
-      redo();
+      M1Trace.sync(M1TraceName.historyRedo, redo);
       _scheduleHistoryReload();
     }
   }

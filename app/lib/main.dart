@@ -28,6 +28,8 @@ import 'package:keybinder/keybinder.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
 import 'cubits/settings.dart';
+import 'debug/performance/m1_probe.dart';
+import 'debug/performance/m1_probe_page.dart';
 import 'embed/embedding.dart';
 import 'settings/inputs/home.dart';
 import 'settings/inputs/keyboard.dart';
@@ -311,6 +313,11 @@ class ButterflyApp extends StatelessWidget {
         ],
       ),
       GoRoute(
+        name: 'm1-probe',
+        path: '/debug/m1',
+        builder: (context, state) => const M1ProbePage(),
+      ),
+      GoRoute(
         name: 'embed',
         path: '/embed',
         builder: (context, state) {
@@ -408,7 +415,8 @@ class ButterflyApp extends StatelessWidget {
           if (!state.nativeTitleBar) {
             child = virtualWindowFrameBuilder(context, child);
           }
-          return RepositoryProvider(
+          return M1ProbeBoundary(
+            child: RepositoryProvider(
             create: ButterflyFileSystem.build,
             dispose: (fileSystem) => fileSystem.dispose(),
             child: RepositoryProvider(
@@ -417,6 +425,7 @@ class ButterflyApp extends StatelessWidget {
               dispose: (service) => service.dispose(),
               lazy: false,
               child: _WindowCloseGuard(child: child ?? Container()),
+            ),
             ),
           );
         },

@@ -2,6 +2,9 @@ package dev.linwood.butterfly;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,10 +21,45 @@ public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "linwood.dev/butterfly";
     private String intentType = null;
     private byte[] intentData = null;
+    private StylusProbePlugin stylusProbePlugin;
+
+    public float currentRefreshRate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && getDisplay() != null) {
+            return getDisplay().getMode().getRefreshRate();
+        }
+        return getWindowManager().getDefaultDisplay().getRefreshRate();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (stylusProbePlugin != null) {
+            stylusProbePlugin.captureTouch(event);
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent event) {
+        if (stylusProbePlugin != null) {
+            stylusProbePlugin.captureGenericMotion(event);
+        }
+        return super.dispatchGenericMotionEvent(event);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (stylusProbePlugin != null) {
+            stylusProbePlugin.captureKey(event);
+        }
+        return super.dispatchKeyEvent(event);
+    }
 
     @Override
     @Nullable
     public String getInitialRoute() {
+        if (BuildConfig.M1_PROBE_ENABLED && getIntent().getBooleanExtra("m1Probe", false)) {
+            return "/debug/m1";
+        }
         if (handleIntent(getIntent())) {
             return "/intent";
         }
@@ -32,7 +70,9 @@ public class MainActivity extends FlutterActivity {
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        if (handleIntent(intent) && getFlutterEngine() != null) {
+        if (BuildConfig.M1_PROBE_ENABLED && intent.getBooleanExtra("m1Probe", false) && getFlutterEngine() != null) {
+            getFlutterEngine().getNavigationChannel().pushRoute("/debug/m1");
+        } else if (handleIntent(intent) && getFlutterEngine() != null) {
             getFlutterEngine().getNavigationChannel().pushRoute("/intent");
         }
     }
@@ -95,6 +135,7 @@ public class MainActivity extends FlutterActivity {
     @Override
     public void configureFlutterEngine(@NonNull io.flutter.embedding.engine.FlutterEngine flutterEngine) {
         super.configureFlutterEngine(flutterEngine);
+        stylusProbePlugin = new StylusProbePlugin(this, flutterEngine);
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
                 .setMethodCallHandler(
                         (call, result) -> {
@@ -107,5 +148,14 @@ public class MainActivity extends FlutterActivity {
                             }
                         }
                 );
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (stylusProbePlugin != null) {
+            stylusProbePlugin.dispose();
+            stylusProbePlugin = null;
+        }
+        super.onDestroy();
     }
 }

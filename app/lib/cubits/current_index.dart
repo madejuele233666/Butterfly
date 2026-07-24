@@ -6,6 +6,7 @@ import 'package:butterfly/api/image.dart';
 import 'package:butterfly/bloc/document_bloc.dart';
 import 'package:butterfly/cubits/settings.dart';
 import 'package:butterfly/cubits/transform.dart';
+import 'package:butterfly/debug/performance/trace.dart';
 import 'package:butterfly/helpers/async.dart';
 import 'package:butterfly/helpers/rect.dart';
 import 'package:butterfly/helpers/xml.dart';
@@ -1268,7 +1269,9 @@ class CurrentIndexCubit extends Cubit<CurrentIndex> {
     double? pixelRatio,
     bool reset = false,
     bool resetAllLayers = false,
-  }) => _bakeLock.synchronized(() async {
+  }) => M1Trace.async(
+    M1TraceName.viewportBake,
+    () => _bakeLock.synchronized(() async {
     if (isClosed) return;
     var cameraViewport = state.cameraViewport;
     final startTransform = state.transformCubit.state;
@@ -1543,7 +1546,8 @@ class CurrentIndexCubit extends Cubit<CurrentIndex> {
         ),
       ),
     );
-  });
+    }),
+  );
 
   Future<ui.Image?> renderImage(
     NoteData document,
@@ -2439,7 +2443,9 @@ class CurrentIndexCubit extends Cubit<CurrentIndex> {
         return state.location;
       }
     }
-    return _savingLock.synchronized(() async {
+    return M1Trace.async(
+      M1TraceName.documentSave,
+      () => _savingLock.synchronized(() async {
       var current = location ?? state.location;
       if (isClosed) {
         return current;
@@ -2493,7 +2499,8 @@ class CurrentIndexCubit extends Cubit<CurrentIndex> {
         ),
       );
       return current;
-    });
+      }),
+    );
   }
 
   @override

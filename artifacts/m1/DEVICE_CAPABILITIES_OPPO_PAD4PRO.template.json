@@ -1,0 +1,33 @@
+{
+  "schema": "notea.m1.device-capabilities/v1",
+  "status": "pending_physical_probe",
+  "device": {
+    "expected_model": "OPPO Pad 4 Pro",
+    "reported_model": null,
+    "build_fingerprint": null,
+    "android_api": null,
+    "refresh_rate_hz": null
+  },
+  "runs": {
+    "60hz": null,
+    "120hz": null
+  },
+  "motion": {
+    "native_samples": null,
+    "native_history_samples": null,
+    "flutter_pointer_events": null,
+    "unexplained_sample_delta": null,
+    "pressure_min": null,
+    "pressure_max": null,
+    "tilt_varies": null,
+    "orientation_varies": null
+  },
+  "shortcut_semantics": {
+    "hover_press_release": null,
+    "contact_press_release": null,
+    "double_tap": null,
+    "ordinary_app_observation": null
+  },
+  "palm_sequences": null,
+  "evidence_files": []
+}
