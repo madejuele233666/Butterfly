@@ -1,8 +1,10 @@
 package dev.linwood.butterfly;
 
 import android.content.Intent;
+import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -24,10 +26,14 @@ public class MainActivity extends FlutterActivity {
     private StylusProbePlugin stylusProbePlugin;
 
     public float currentRefreshRate() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && getDisplay() != null) {
-            return getDisplay().getMode().getRefreshRate();
+        Display display;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            display = getDisplay();
+        } else {
+            DisplayManager displayManager = (DisplayManager) getSystemService(DISPLAY_SERVICE);
+            display = displayManager.getDisplay(Display.DEFAULT_DISPLAY);
         }
-        return getWindowManager().getDefaultDisplay().getRefreshRate();
+        return display == null ? 0 : display.getMode().getRefreshRate();
     }
 
     @Override
