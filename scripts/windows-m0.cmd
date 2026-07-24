@@ -46,13 +46,28 @@ call "%FLUTTER%" test --no-pub --file-reporter "expanded:%EVIDENCE%\flutter-test
 exit /b %ERRORLEVEL%
 
 :build_debug
-call "%FLUTTER%" build apk --debug --flavor production --no-pub
-exit /b %ERRORLEVEL%
+call :prepare_evidence "%~2"
+set "BUILD_LOG=%EVIDENCE%\flutter-build-debug-%STAMP%.log"
+call "%FLUTTER%" build apk --debug --flavor production --no-pub > "%BUILD_LOG%" 2>&1
+set "BUILD_EXIT=%ERRORLEVEL%"
+type "%BUILD_LOG%"
+exit /b %BUILD_EXIT%
 
 :build_release
-call "%FLUTTER%" build apk --release --flavor production --no-pub
-exit /b %ERRORLEVEL%
+call :prepare_evidence "%~2"
+set "BUILD_LOG=%EVIDENCE%\flutter-build-release-%STAMP%.log"
+call "%FLUTTER%" build apk --release --flavor production --no-pub > "%BUILD_LOG%" 2>&1
+set "BUILD_EXIT=%ERRORLEVEL%"
+type "%BUILD_LOG%"
+exit /b %BUILD_EXIT%
 
 :devices
 call "%FLUTTER%" --verbose devices
 exit /b %ERRORLEVEL%
+
+:prepare_evidence
+set "EVIDENCE=%~1"
+if not defined EVIDENCE set "EVIDENCE=%MIRROR_ROOT%\evidence"
+if not exist "%EVIDENCE%" mkdir "%EVIDENCE%"
+for /f %%i in ('powershell.exe -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set "STAMP=%%i"
+exit /b 0
