@@ -10,6 +10,7 @@ set "ANDROID_SDK_ROOT=%ANDROID_HOME%"
 set "ANDROID_AVD_HOME=%MIRROR_ROOT%\avd"
 set "JAVA_HOME=%MIRROR_ROOT%\toolchains\AndroidStudio\jbr"
 set "PATH=C:\Windows\System32;C:\Windows;C:\Windows\System32\WindowsPowerShell\v1.0;D:\install_software\Git\cmd;%MIRROR_ROOT%\toolchains\flutter\bin;%ANDROID_HOME%\platform-tools;%ANDROID_HOME%\emulator;%ANDROID_HOME%\cmdline-tools\latest\bin;C:\Users\27866\.cargo\bin"
+set "PATHEXT=.COM;.EXE;.BAT;.CMD"
 
 if not exist "%FLUTTER%" (
   echo Flutter was not found at %FLUTTER%. 1>&2
