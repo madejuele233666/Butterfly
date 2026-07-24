@@ -2,6 +2,7 @@ package dev.linwood.butterfly
 
 import android.os.Build
 import android.os.SystemClock
+import android.os.Trace
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -49,6 +50,10 @@ class StylusProbePlugin(
             "start" -> {
                 val requested = call.argument<Int>("capacity") ?: DEFAULT_CAPACITY
                 capacity = requested.coerceIn(1024, 131072)
+                while (records.size > capacity) {
+                    records.removeFirst()
+                    dropped += 1
+                }
                 running = BuildConfig.M1_PROBE_ENABLED
                 result.success(status())
             }
@@ -103,43 +108,48 @@ class StylusProbePlugin(
 
     private fun captureMotion(kind: String, event: MotionEvent) {
         if (!running || !BuildConfig.M1_PROBE_ENABLED) return
-        val pointers = JSONArray()
-        for (pointerIndex in 0 until event.pointerCount) {
-            val history = JSONArray()
-            for (historyIndex in 0 until event.historySize) {
-                history.put(sampleJson(event, pointerIndex, historyIndex))
+        Trace.beginSection("stylus.history.decode")
+        try {
+            val pointers = JSONArray()
+            for (pointerIndex in 0 until event.pointerCount) {
+                val history = JSONArray()
+                for (historyIndex in 0 until event.historySize) {
+                    history.put(sampleJson(event, pointerIndex, historyIndex))
+                }
+                pointers.put(
+                    sampleJson(event, pointerIndex, null)
+                        .put("pointerId", event.getPointerId(pointerIndex))
+                        .put("toolType", event.getToolType(pointerIndex))
+                        .put("history", history),
+                )
             }
-            pointers.put(
-                sampleJson(event, pointerIndex, null)
-                    .put("pointerId", event.getPointerId(pointerIndex))
-                    .put("toolType", event.getToolType(pointerIndex))
-                    .put("history", history),
+            append(
+                JSONObject()
+                    .put("schema", "notea.m1.motion/v1")
+                    .put("sourceLayer", "android")
+                    .put("dispatch", kind)
+                    .put("recordedElapsedNanos", SystemClock.elapsedRealtimeNanos())
+                    .put("eventTimeNanos", event.eventTime * 1_000_000L)
+                    .put("downTimeNanos", event.downTime * 1_000_000L)
+                    .put("action", event.action)
+                    .put("actionMasked", event.actionMasked)
+                    .put("actionIndex", event.actionIndex)
+                    .put("actionButton", if (Build.VERSION.SDK_INT >= 23) event.actionButton else 0)
+                    .put("buttonState", event.buttonState)
+                    .put("source", event.source)
+                    .put("deviceId", event.deviceId)
+                    .put("flags", event.flags)
+                    .put("canceled", event.actionMasked == MotionEvent.ACTION_CANCEL)
+                    .put("historySize", event.historySize)
+                    .put("pointerCount", event.pointerCount)
+                    .put("refreshRateHz", activity.currentRefreshRate())
+                    .put("device", deviceJson(event.device))
+                    .put("pointers", pointers)
+                    .toString(),
             )
+        } finally {
+            Trace.endSection()
         }
-        append(
-            JSONObject()
-                .put("schema", "notea.m1.motion/v1")
-                .put("sourceLayer", "android")
-                .put("dispatch", kind)
-                .put("recordedElapsedNanos", SystemClock.elapsedRealtimeNanos())
-                .put("eventTimeNanos", event.eventTime * 1_000_000L)
-                .put("downTimeNanos", event.downTime * 1_000_000L)
-                .put("action", event.action)
-                .put("actionMasked", event.actionMasked)
-                .put("actionIndex", event.actionIndex)
-                .put("actionButton", if (Build.VERSION.SDK_INT >= 23) event.actionButton else 0)
-                .put("buttonState", event.buttonState)
-                .put("source", event.source)
-                .put("deviceId", event.deviceId)
-                .put("flags", event.flags)
-                .put("canceled", event.actionMasked == MotionEvent.ACTION_CANCEL)
-                .put("historySize", event.historySize)
-                .put("pointerCount", event.pointerCount)
-                .put("refreshRateHz", activity.currentRefreshRate())
-                .put("device", deviceJson(event.device))
-                .put("pointers", pointers)
-                .toString(),
-        )
     }
 
     private fun sampleJson(event: MotionEvent, pointerIndex: Int, historyIndex: Int?): JSONObject {

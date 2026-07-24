@@ -139,7 +139,11 @@ class M1ProbeController extends ChangeNotifier {
     if (!m1ProbeEnabled) {
       throw StateError('M1 probe was not enabled at build time');
     }
-    await refreshStatus();
+    if (_running) {
+      await stop();
+    } else {
+      await refreshStatus();
+    }
     final native = <String>[];
     var offset = 0;
     while (true) {

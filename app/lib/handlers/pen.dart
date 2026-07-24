@@ -94,8 +94,10 @@ class PenHandler extends Handler<PenTool> with ColoredHandler {
     if (elements.isEmpty) return;
     _submittedElements.addAll(elements);
     lastPosition.removeWhere((key, value) => indexes.contains(key));
-    bloc.add(ElementsCreated(elements));
-    bloc.refresh(allowBake: false);
+    M1Trace.sync(M1TraceName.strokeCommit, () {
+      bloc.add(ElementsCreated(elements));
+      bloc.refresh(allowBake: false);
+    });
   }
 
   @override
@@ -240,13 +242,16 @@ class PenHandler extends Handler<PenTool> with ColoredHandler {
       },
     );
     // Call the addPoint function to add a point to the current brush stroke.
-    addPoint(
-      context.buildContext,
-      event.pointer,
-      event.localPosition,
-      context.viewportSize,
-      getPressureOfEvent(event),
-      event.kind,
+    M1Trace.sync(
+      M1TraceName.strokeForegroundUpdate,
+      () => addPoint(
+        context.buildContext,
+        event.pointer,
+        event.localPosition,
+        context.viewportSize,
+        getPressureOfEvent(event),
+        event.kind,
+      ),
     );
     points.add(event.localPosition);
   }

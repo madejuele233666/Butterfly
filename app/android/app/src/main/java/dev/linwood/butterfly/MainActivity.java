@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Trace;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -38,10 +39,16 @@ public class MainActivity extends FlutterActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (stylusProbePlugin != null) {
-            stylusProbePlugin.captureTouch(event);
+        if (stylusProbePlugin == null || !BuildConfig.M1_PROBE_ENABLED) {
+            return super.dispatchTouchEvent(event);
         }
-        return super.dispatchTouchEvent(event);
+        Trace.beginSection("stylus.dispatch");
+        try {
+            stylusProbePlugin.captureTouch(event);
+            return super.dispatchTouchEvent(event);
+        } finally {
+            Trace.endSection();
+        }
     }
 
     @Override
