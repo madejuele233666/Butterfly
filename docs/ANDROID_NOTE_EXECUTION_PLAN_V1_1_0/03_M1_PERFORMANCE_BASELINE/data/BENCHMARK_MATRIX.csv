@@ -1,0 +1,6 @@
+dataset_id,stroke_count,points_per_stroke,distribution,purpose
+empty,0,0,none,empty latency baseline
+normal_1k,1000,40,notebook-like,normal page
+heavy_10k,10000,40,dense notebook,large page
+stress_50k,50000,30,wide infinite canvas,viewport and index
+extreme_200k,200000,20,wide infinite canvas,non-V1 stress gate

@@ -1,63 +1,35 @@
-<div align="center">
+# Notea
 
-<img src="https://raw.githubusercontent.com/LinwoodDev/butterfly/develop/app/images/logo.png" width="350px" />
+Notea 是一个面向 Android 平板与手写笔的高性能笔记项目，以 Butterfly `v2.5.3` 为不可变产品基线，逐阶段演进到 Rust + SQLite 权威后端。
 
-# Butterfly
+## 仓库结构
 
-> 🎨 Powerful, minimalistic, cross-platform, opensource note-taking app 🎨
+- `app/`、`api/`、`tools/`：Butterfly `v2.5.3` 产品源码及工具。
+- `docs/project-baseline/`：冻结需求、决策和执行规则。
+- `docs/ANDROID_NOTE_EXECUTION_PLAN_V1_1_0/`：M0–M6 分阶段执行包。
+- `scripts/`：Notea 跨 WSL/Windows 的项目维护脚本。
+- `artifacts/`：已记录的构建、测试和环境证据；`artifacts/local/` 仅用于本机临时输出。
 
-[![Latest release)](https://img.shields.io/github/v/release/LinwoodDev/butterfly?color=EBB733&style=for-the-badge&logo=github&logoColor=EBB733)](https://github.com/LinwoodDev/butterfly/releases)
-[![GitHub License badge](https://img.shields.io/github/license/LinwoodDev/butterfly?color=EBB733&style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjZWJiNzMzIiB2aWV3Qm94PSIwIDAgMjU2IDI1NiI%2BPHJlY3Qgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIGZpbGw9Im5vbmUiPjwvcmVjdD48cmVjdCB4PSIzMiIgeT0iNDgiIHdpZHRoPSIxOTIiIGhlaWdodD0iMTYwIiByeD0iOCIgc3Ryb2tlLXdpZHRoPSIxNiIgc3Ryb2tlPSIjZWJiNzMzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiPjwvcmVjdD48bGluZSB4MT0iNzYiIHkxPSI5NiIgeDI9IjE4MCIgeTI9Ijk2IiBmaWxsPSJub25lIiBzdHJva2U9IiNlYmI3MzMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIxNiI%2BPC9saW5lPjxsaW5lIHgxPSI3NiIgeTE9IjEyOCIgeDI9IjE4MCIgeTI9IjEyOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZWJiNzMzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMTYiPjwvbGluZT48bGluZSB4MT0iNzYiIHkxPSIxNjAiIHgyPSIxODAiIHkyPSIxNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ViYjczMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjE2Ij48L2xpbmU%2BPC9zdmc%2B)](https://github.com/LinwoodDev/butterfly/blob/main/LICENSE)
-[![GitHub Repo stars](https://img.shields.io/github/stars/LinwoodDev/butterfly?color=EBB733&logo=github&logoColor=EBB733&style=for-the-badge)](https://github.com/LinwoodDev/butterfly)
-[![Matrix badge](https://img.shields.io/matrix/linwood:matrix.org?style=for-the-badge&color=EBB733&logo=matrix&logoColor=EBB733&label=Matrix)](https://linwood.dev/matrix)
-[![Discord badge](https://img.shields.io/discord/735424757142519848?style=for-the-badge&color=EBB733&logo=discord&logoColor=EBB733&label=Discord)](https://discord.linwood.dev)
-[![Download](https://img.shields.io/github/downloads/LinwoodDev/butterfly/total?color=EBB733&style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjZWJiNzMzIiB2aWV3Qm94PSIwIDAgMjU2IDI1NiI+PHJlY3Qgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIGZpbGw9Im5vbmUiPjwvcmVjdD48cG9seWxpbmUgcG9pbnRzPSI4NiAxMTAuMDExIDEyOCAxNTIgMTcwIDExMC4wMTEiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ViYjczMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjE2Ij48L3BvbHlsaW5lPjxsaW5lIHgxPSIxMjgiIHkxPSI0MCIgeDI9IjEyOCIgeTI9IjE1MS45NzA1NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZWJiNzMzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMTYiPjwvbGluZT48cGF0aCBkPSJNMjE2LDE1MnY1NmE4LDgsMCwwLDEtOCw4SDQ4YTgsOCwwLDAsMS04LThWMTUyIiBmaWxsPSJub25lIiBzdHJva2U9IiNlYmI3MzMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIxNiI+PC9wYXRoPjwvc3ZnPg==)](https://butterfly.linwood.dev/downloads)
-</div>
+## 分支契约
 
-<p align="center">
-    <a href="https://butterfly.linwood.dev"><b>Website</b></a> •
-    <a href="https://butterfly.linwood.dev/downloads"><b>Download</b></a> •
-    <a href="https://go.linwood.dev/butterfly/translate"><b>Crowdin</b></a> •
-    <a href="https://go.linwood.dev/matrix"><b>Matrix</b></a> •
-    <a href="https://go.linwood.dev/discord"><b>Discord</b></a> •
-    <a href="https://floss.social/@linwood"><b>Mastodon</b></a> •
-    <a href="https://bsky.app/profile/linwood.dev"><b>Bluesky</b></a> •
-    <a href="https://linwood.dev"><b>Linwood</b></a> •
-    <a href="CONTRIBUTING.md"><b>Contribute</b></a>
-</p>
+- `baseline/v2.5.3-pristine`：必须始终指向上游 `v2.5.3` 提交 `a10a9787fd4fdc51c9426ead83ff063136015fb2`。
+- `work/v1-main`：Notea 主开发分支。
+- `project/bootstrap-docs`：引入 Butterfly 前的文档初始化历史，只作追溯。
 
----
+## 开发环境分工
 
-Butterfly is a note-taking app where your ideas come first. You can paint, add texts, and export them easily on every device. This app works on Android, Windows, Linux, and in the web.
+- WSL `/home/madejuele/projects/Notea`：主力开发、代码修改、提交和集成。
+- Windows `D:\files\Notea_Mirror\workspace`：Android/Windows 工具链、AVD、真机和构建测试。
+- 两侧通过 Git 提交同步；不复制整个目录，不同步 SDK、缓存、密钥或本机临时产物。
 
-## Features
+## 文档入口
 
-* **⚡ Simple and intuitive:** Every tool is in the right place. Open the app and start drawing. Change your tools by clicking on them.
-* **🎨 Customizable:** Change everything to your needs. Choose your custom color, create a palette, and add your pages to the paper. The paper has an infinite size, perfect for your ideas and notes.
-* **📝 Supports your favorite formats:** Import and export are supported for images, PDF and SVG. Open these files directly to edit them.
-* **📱 Works on every device:** The app is available for Android, Windows, Linux, and in the web. You can use it on your phone, tablet, or computer.
-* **💻 Choose where your data is stored:** You can choose to store your data locally or in your favorite cloud (WebDAV). You can also export your data to a file and import it again.
-* **🌐 Available in many languages:** The app is available in many languages. Help us to translate this app to your language.
-* **📚 FOSS:** The app is open source and free. You can contribute to the project and help to make it better.
-* **🔋 Use it offline:** You can use the app offline. You can draw, paint, and export your notes without an internet connection.
-* **🖊️ Use your favorite stylus:** The app supports stylus and touch devices. You can draw and paint with your favorite stylus.
-* **📜 Write text:** You can write text on your notes. You can change the font, size, and color.
-* **📸 Take photos:** You can take photos and add them to your notes. You can also import photos from your gallery.
-* **⚙️ Editable:** You can change the size, color, and position of every element after you added it to your note.
-* **🟦 Add shapes:** You can add shapes to your notes. You can choose between a rectangle, triangle, circle and line.
-* **🔳 Structure your notes:** Add areas and waypoints to your notes to keep them organized.
+- [分步执行包](docs/ANDROID_NOTE_EXECUTION_PLAN_V1_1_0/README.md)
+- [冻结项目基线](docs/project-baseline/README.md)
+- [M0：工具链与不可变 Butterfly 基线](docs/ANDROID_NOTE_EXECUTION_PLAN_V1_1_0/01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/EXECUTE.md)
+- [Butterfly 上游项目](https://github.com/LinwoodDev/Butterfly)
 
-Try it [now](http://butterfly.linwood.dev/downloads)!
+## 许可证与来源
 
----
+产品代码继承 Butterfly 的许可证边界：主体代码为 AGPL-3.0，`api/` 为 Apache-2.0，图像与上游文档受 `BRANDING_LICENSE` 约束。Notea 的冻结需求和执行记录不改变这些上游许可声明。
 
-## Contributing
-
-We are happy to see that you are interested in contributing to Butterfly.
-To get started, visit [the contributing guide](CONTRIBUTING.md).
-
-## License
-
-The code is open source and licensed under the [AGPL-3.0](./LICENSE) license.
-All images in `app/images/` and content in `docs/` are licensed under the [CC-BY-SA-4.0](./BRANDING_LICENSE) license.
-The files in `api` are licensed under the [Apache-2.0](./api/LICENSE) license instead of the AGPL-3.0 license to allow the use of the API without the need to open source the code (for example for extensions or other external services).

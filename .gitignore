@@ -1,12 +1,45 @@
-# Editor related
-.idea
-.vscode
+# Editor files
+.idea/
+.vscode/
+.zed/
 *.iml
+*.swp
+*.swo
 \#*\#
 .\#*f
-.zed
 
-# Temporary files
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+local.properties
+key.properties
+*.jks
+*.keystore
+
+# Dart and Flutter generated files
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+pubspec_overrides.yaml
+
+# Android and native build outputs
+.gradle/
+.cxx/
+
+# Rust build outputs
+target/
+
+# Local-only evidence and scratch space
+artifacts/local/
 docs_old/
-./snap/
+snap/
 

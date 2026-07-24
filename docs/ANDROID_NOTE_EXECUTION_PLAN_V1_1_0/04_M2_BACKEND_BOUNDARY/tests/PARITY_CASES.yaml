@@ -1,0 +1,15 @@
+cases:
+  - id: create-single-stroke
+    commands: [CreateStroke]
+  - id: erase-stroke-gesture
+    commands: [CreateStroke, EraseStrokes]
+  - id: partial-erase-split
+    commands: [CreateStroke, PartialErase]
+  - id: lasso-translate
+    commands: [CreateStroke, SelectByLasso, TranslateSelection]
+  - id: undo-redo-branch
+    commands: [CreateStroke, Undo, CreateStroke]
+normalization:
+  sort_elements_by: element_id
+  ignore_fields: [render_cache, transient_foreground]
+  float_quantization: 1e-6

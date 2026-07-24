@@ -1,0 +1,374 @@
+{
+  "package": "ANDROID_NOTE_EXECUTION_PLAN",
+  "version": "1.1.0",
+  "date": "2026-07-24",
+  "requirements_sha256": "1678bb842326cc7a1391b8c31e93b262e39f3e03abe55082b8d94d9f70790bcf",
+  "entrypoint": "README.md",
+  "files": [
+    {
+      "path": "00_PROJECT_BASELINE/DECISION_FREEZE.md",
+      "bytes": 622,
+      "sha256": "9a572e2d24a16a00260a815b6d0bfa0c7e73cc3c76d7db80edc84ff15f8a8aa5"
+    },
+    {
+      "path": "00_PROJECT_BASELINE/DECISION_LOG.md",
+      "bytes": 275,
+      "sha256": "1e7b939da3d22df6f2bba07bfb2a88ab6443eb2a54cfde618b0ac7e36538eea4"
+    },
+    {
+      "path": "00_PROJECT_BASELINE/EXECUTION_RULES.md",
+      "bytes": 531,
+      "sha256": "13c718b1930e33a00045ab4f2f6549b8a9586535b58735a96cdcfd30d3ec2bc7"
+    },
+    {
+      "path": "00_PROJECT_BASELINE/README.md",
+      "bytes": 813,
+      "sha256": "8705ed4ed3d3a7dd3603362df74fae33ec453b58d41d85ead4e5637cae19ae99"
+    },
+    {
+      "path": "00_PROJECT_BASELINE/REQUIREMENTS_BASELINE_V1.json",
+      "bytes": 47080,
+      "sha256": "1678bb842326cc7a1391b8c31e93b262e39f3e03abe55082b8d94d9f70790bcf"
+    },
+    {
+      "path": "00_PROJECT_BASELINE/RUN_RECORD_TEMPLATE.json",
+      "bytes": 832,
+      "sha256": "787a8a31301ae97a40c0714fbf034f3472672e0e3e6ee2c4e07f8122e13f2c17"
+    },
+    {
+      "path": "00_PROJECT_BASELINE/SOURCE_LEDGER_V1.md",
+      "bytes": 8813,
+      "sha256": "37d8b3ce955d775f05245cc7aa8d8f542d34b15ad40c628c86d4a64f292ae409"
+    },
+    {
+      "path": "01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/AVD_SETUP.md",
+      "bytes": 475,
+      "sha256": "69120617adbed9ca4c9dfe5b0937bd794f59f71db4671d3f8358171cde5aa7f3"
+    },
+    {
+      "path": "01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/CHECKLIST.md",
+      "bytes": 378,
+      "sha256": "ffdf6e43f1c81ee9056952b538a0fb2511a45a853d7ee4d979761feb0af99e78"
+    },
+    {
+      "path": "01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/EXECUTE.md",
+      "bytes": 2083,
+      "sha256": "7c66abd20dfa67b63923670b6f87396826e6a05a3dcfa702776eab7f2a5986ad"
+    },
+    {
+      "path": "01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/references/README.md",
+      "bytes": 256,
+      "sha256": "1c81ba97e2be1b5d7d32f9fde64215fd9a12ec2f049e9096d6a8b4f61b8e64cb"
+    },
+    {
+      "path": "01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/scripts/00_preflight.ps1",
+      "bytes": 1094,
+      "sha256": "f8ebcba362f25b27cd716f43b42b28e43260fc4f0d70a642bd3b2dc433462e87"
+    },
+    {
+      "path": "01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/scripts/01_clone_baseline.ps1",
+      "bytes": 725,
+      "sha256": "a8bebe5f5e10d2383cc3335d8677b0f64cf5465089d9eadad2d9640679678566"
+    },
+    {
+      "path": "01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/scripts/02_capture_toolchain.ps1",
+      "bytes": 799,
+      "sha256": "52845951154f04463d7bd2736e2be05a995be293257c30b4caa7eb13564e19ec"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/CHECKLIST.md",
+      "bytes": 347,
+      "sha256": "c2a4a13ca943885d3098f084d35249e0b56582e707eb8832f71908da6a4963bc"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/EXECUTE.md",
+      "bytes": 1943,
+      "sha256": "7f019fa17dcf6f7b30f6153eda117bad1a37a8b8512b13da09bffc669b469492"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/STYLUS_TEST_MATRIX.md",
+      "bytes": 800,
+      "sha256": "b873f4eb202b1d630b7c2ebd809c06009089ef3b94c001d2fd0f477b07f63394"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/references/README.md",
+      "bytes": 296,
+      "sha256": "33639f226d523555eefa86c86ef33738278af81f35a60c3369ee3cb78d8a0859"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/scripts/00_adb_preflight.ps1",
+      "bytes": 224,
+      "sha256": "295933d09743b9c44c726356e70d1e1b0ee3091d35242cc3648564fd8db2ab88"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/scripts/01_capture_device_info.ps1",
+      "bytes": 912,
+      "sha256": "7770ebb2a8682e4959db4d58e0d0ce577c6a192ffa19bc6dfb49ad532484a9c6"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/templates/CAPABILITY_REPORT.md",
+      "bytes": 648,
+      "sha256": "63e6c5f0d51ab4f7211d4d6383cefd6a9cf08d3ecac6c0c1bfb91ee7db95b079"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/templates/StylusProbePlugin.kt.template",
+      "bytes": 2897,
+      "sha256": "8d499507ec7276a4e781e86cb55ea0a3c4b2724cb39efe7cd5bb1a095696a068"
+    },
+    {
+      "path": "02_M1_DEVICE_AND_STYLUS_PROBE/templates/stylus_probe_event.schema.json",
+      "bytes": 1799,
+      "sha256": "e84eda3db9a6576c054629a3f15ef24ae2dbd41cc226100f610e035f35abe6a8"
+    },
+    {
+      "path": "03_M1_PERFORMANCE_BASELINE/CHECKLIST.md",
+      "bytes": 329,
+      "sha256": "1be6b9189a3389fafb14fbf2608f595cdb6e97ac96c68680a533112835456a2c"
+    },
+    {
+      "path": "03_M1_PERFORMANCE_BASELINE/EXECUTE.md",
+      "bytes": 1705,
+      "sha256": "79e6d7b4e7f610e9da94c5bfda4dfbe56db68d69d43b69eb5f33dc66c28b49c7"
+    },
+    {
+      "path": "03_M1_PERFORMANCE_BASELINE/data/BENCHMARK_MATRIX.csv",
+      "bytes": 313,
+      "sha256": "49ee8edeeaa11c6498f5f58a6e448d3eb1146db5a333ca8ed1cb8cea864dca3e"
+    },
+    {
+      "path": "03_M1_PERFORMANCE_BASELINE/docs/TRACE_SECTIONS.md",
+      "bytes": 365,
+      "sha256": "68f2c50e6f8cdbd761c94c878a4097f066e9fc0479547e83e0c0ad14afa8695a"
+    },
+    {
+      "path": "03_M1_PERFORMANCE_BASELINE/references/README.md",
+      "bytes": 300,
+      "sha256": "93f42e0a1bbe51844c9a66dbb55fcc50f354357f647d0643189dfd4f19432f51"
+    },
+    {
+      "path": "03_M1_PERFORMANCE_BASELINE/templates/BASELINE_REPORT.md",
+      "bytes": 622,
+      "sha256": "ba618c8ec3e858ecdd6120f1ea0705eb4c7367fabfca9a4940d2014fc963ccaa"
+    },
+    {
+      "path": "04_M2_BACKEND_BOUNDARY/CHECKLIST.md",
+      "bytes": 286,
+      "sha256": "bee94e6f08f70760b62b9c4c45f50262ed0ff703d87170e79b47cf62ece6b82e"
+    },
+    {
+      "path": "04_M2_BACKEND_BOUNDARY/EXECUTE.md",
+      "bytes": 1890,
+      "sha256": "a3d0043279dfb50ec08c200b18a9478870bc29027876e455c9dda94e29c98cc9"
+    },
+    {
+      "path": "04_M2_BACKEND_BOUNDARY/interfaces/COMMAND_CONTRACT.md",
+      "bytes": 535,
+      "sha256": "5f000b10cebd4d201b5bfc7fb28d6fa46292e1288ab9c89291959d0b274a2dfa"
+    },
+    {
+      "path": "04_M2_BACKEND_BOUNDARY/interfaces/DocumentBackend.dart",
+      "bytes": 542,
+      "sha256": "fdfebb53284796e676300165793e7810b5d3890043aff907fce436308d646561"
+    },
+    {
+      "path": "04_M2_BACKEND_BOUNDARY/tests/PARITY_CASES.yaml",
+      "bytes": 497,
+      "sha256": "be8c48e685bdec13c91aafb26f9478b8bee4e221102a787429458f9eee18af64"
+    },
+    {
+      "path": "05_M3_RUST_SHADOW_BACKEND/CHECKLIST.md",
+      "bytes": 292,
+      "sha256": "35d9b8c867fd0af050db5ac9a1d680d761c434bf50f4c3713f20d343ce1cd1ea"
+    },
+    {
+      "path": "05_M3_RUST_SHADOW_BACKEND/EXECUTE.md",
+      "bytes": 1309,
+      "sha256": "9e7bf32fb382730c3e061c2c6c1f1a677f228a09fd9d1b8e420bb93442dbede0"
+    },
+    {
+      "path": "05_M3_RUST_SHADOW_BACKEND/rust/Cargo.toml.template",
+      "bytes": 246,
+      "sha256": "02bebb9ce1ae75f1611d9894622834d77cd113e68f6edf431bd071be67796551"
+    },
+    {
+      "path": "05_M3_RUST_SHADOW_BACKEND/schemas/CANONICAL_STATE.md",
+      "bytes": 354,
+      "sha256": "811895c0fda344d94c8638f7326221695cf2bd42c35f597f3ec9ac6152c835a1"
+    },
+    {
+      "path": "05_M3_RUST_SHADOW_BACKEND/tests/SHADOW_MATRIX.csv",
+      "bytes": 172,
+      "sha256": "19a6106974d09cc9a6b43a1b8e7969bfbd068a15fc71adb88ba629c6087d1800"
+    },
+    {
+      "path": "06_M4_RUST_SQLITE_AUTHORITY/CHECKLIST.md",
+      "bytes": 339,
+      "sha256": "97a67cc81883c8847e7bd6a335574b87a3a3d6f6dec8da0cdf4d209899c92c73"
+    },
+    {
+      "path": "06_M4_RUST_SQLITE_AUTHORITY/EXECUTE.md",
+      "bytes": 1950,
+      "sha256": "ece7de046cee54930571eb2988d02db5aa0d98ee7dfd897104a247579d595bfd"
+    },
+    {
+      "path": "06_M4_RUST_SQLITE_AUTHORITY/rust/document_store_trait.rs",
+      "bytes": 650,
+      "sha256": "16629095096f1ca149aa82952dac25a72760c079832b6f0a8dba77914a930095"
+    },
+    {
+      "path": "06_M4_RUST_SQLITE_AUTHORITY/sql/integrity_checks.sql",
+      "bytes": 128,
+      "sha256": "71a72d0d75c7e97bb12369e09cbd2778387707d9547a248636065517c9260a85"
+    },
+    {
+      "path": "06_M4_RUST_SQLITE_AUTHORITY/sql/pragma_profiles.sql",
+      "bytes": 405,
+      "sha256": "e1ebfbd33b118b976c134db932ea9e3c354bfd345a97b679c395c95cfcaf4ad8"
+    },
+    {
+      "path": "06_M4_RUST_SQLITE_AUTHORITY/sql/schema_v1_1.sql",
+      "bytes": 1567,
+      "sha256": "f91e85bb5f686c00f1675384da54213e177b0d8021e49862ac448f5ac31af1cf"
+    },
+    {
+      "path": "06_M4_RUST_SQLITE_AUTHORITY/tests/FAULT_MATRIX.csv",
+      "bytes": 382,
+      "sha256": "8257094f3ccb1647e0ae317dc25fb63b01baa1345454f9a5aedf28205158a351"
+    },
+    {
+      "path": "07_M5_EDITING_GEOMETRY/CHECKLIST.md",
+      "bytes": 291,
+      "sha256": "7986420d128c16d9a580423a1725d53edb4b431a0b8c563d9bf430954bbd11fc"
+    },
+    {
+      "path": "07_M5_EDITING_GEOMETRY/EXECUTE.md",
+      "bytes": 1645,
+      "sha256": "42771e7afd8a7214f028ecb4775fefad83a1859cffd538dd340ac1149cf76344"
+    },
+    {
+      "path": "07_M5_EDITING_GEOMETRY/algorithms/LASSO.md",
+      "bytes": 443,
+      "sha256": "8d6086953e4477f68e4ede7d2c9fdb4c1b8464b1b866e67933b574c4b5118913"
+    },
+    {
+      "path": "07_M5_EDITING_GEOMETRY/algorithms/PARTIAL_ERASER.md",
+      "bytes": 520,
+      "sha256": "60868e9b4ce9e4a9da2d91b4fa0afdbafd75de7e3eea30f582fa651b63fbe644"
+    },
+    {
+      "path": "07_M5_EDITING_GEOMETRY/tests/GEOMETRY_CASES.yaml",
+      "bytes": 358,
+      "sha256": "f38a294ca239714de34e81e671f35db0cbd17320ac36684c007b6ff9738287f3"
+    },
+    {
+      "path": "08_M6_PAGED_DOCUMENT_AND_UX/CHECKLIST.md",
+      "bytes": 307,
+      "sha256": "63f7522f212e19e597d963820f8576071c994c86239f57e9d6389789080fca29"
+    },
+    {
+      "path": "08_M6_PAGED_DOCUMENT_AND_UX/EXECUTE.md",
+      "bytes": 1603,
+      "sha256": "d31d9bcd2ed90aaa2ec50ddc7243dba5367793fb3d285d182791753478faab0c"
+    },
+    {
+      "path": "08_M6_PAGED_DOCUMENT_AND_UX/state/session_state.schema.json",
+      "bytes": 490,
+      "sha256": "34d7ab5afa30f2d8b26e41a1ab45c9ba6efd9753e191d4724124feee7789b549"
+    },
+    {
+      "path": "08_M6_PAGED_DOCUMENT_AND_UX/ux/INTERACTION_SPEC.md",
+      "bytes": 642,
+      "sha256": "b564001a04939f7222681471c31a2b553dc0b1298b7f773b3dd962a6f73698bc"
+    },
+    {
+      "path": "09_DECISION_GATES/ADR_TEMPLATE.md",
+      "bytes": 211,
+      "sha256": "f7033d58d6ddc596cd860f3170308f1840ff298823a211638337e27a9450c7ce"
+    },
+    {
+      "path": "09_DECISION_GATES/JETPACK_INK_GATE.md",
+      "bytes": 630,
+      "sha256": "d406bd01d56767e1d26d4cece9caeb73a1b6f0640e7592bf6ee3a046c1d7edd7"
+    },
+    {
+      "path": "09_DECISION_GATES/README.md",
+      "bytes": 472,
+      "sha256": "72caa0c0ba39d84ac0c054e8bac88eafc409c1f848639fa08f805eb8fd089445"
+    },
+    {
+      "path": "09_DECISION_GATES/ROOT_DIAGNOSTIC_GATE.md",
+      "bytes": 1073,
+      "sha256": "1546e45d019f8bcef9ec8e8766e16818cc5f4a1377f180e814cb6e0e9fed6d7a"
+    },
+    {
+      "path": "09_DECISION_GATES/SQLITE_PROFILE_GATE.md",
+      "bytes": 531,
+      "sha256": "b0e213be1cc2264fc9e3c2df728d26f86cbe5b5979a5212ec988310d7525779c"
+    },
+    {
+      "path": "09_DECISION_GATES/TILE_CACHE_GATE.md",
+      "bytes": 541,
+      "sha256": "611bd4cc61ad1c3a7f4f036c654abb63bd600601706669eef528e73911001b6b"
+    },
+    {
+      "path": "10_DAILY_OPERATIONS/BACKUP_RECOVERY.md",
+      "bytes": 445,
+      "sha256": "7aa516ab6001ad557f16648205e3d3fa496573bb6ea5a8e233f65c524fb521bc"
+    },
+    {
+      "path": "10_DAILY_OPERATIONS/DAILY_LOOP.md",
+      "bytes": 593,
+      "sha256": "37e77d3045ec81893afeb6cc4c96bb783c98ca55ffd9f44f2af1eaf9b6489f0d"
+    },
+    {
+      "path": "10_DAILY_OPERATIONS/DEBUG_PROFILE_RELEASE.md",
+      "bytes": 302,
+      "sha256": "386158fbbdf8353fee45e82db1587a55348f90ac68362bfacaaeff679a5c859e"
+    },
+    {
+      "path": "10_DAILY_OPERATIONS/ROOT_POLICY.md",
+      "bytes": 312,
+      "sha256": "41f1f846485d8a0620928314b7ec08daa85282d32412e137d26afb6feb29e945"
+    },
+    {
+      "path": "10_DAILY_OPERATIONS/SQLITE_MAINTENANCE.md",
+      "bytes": 433,
+      "sha256": "62d5abeefab4d026ea6f667671b92780089d94e090098ddfbf2392433c1316c4"
+    },
+    {
+      "path": "10_DAILY_OPERATIONS/scripts/capture_logcat.ps1",
+      "bytes": 422,
+      "sha256": "ab7a5e8f78b5d6eb99812fa39889aa3fd2caec50c78d37f6288f4f90f61d2c34"
+    },
+    {
+      "path": "10_DAILY_OPERATIONS/scripts/capture_run_environment.ps1",
+      "bytes": 597,
+      "sha256": "3f74fc523d3552457d89fe6df2a54b5b8ffddbb8f33c3e7a13fdb7f09b5aedc2"
+    },
+    {
+      "path": "90_MASTER_AND_REFERENCE/BUTTERFLY_RUST_ANDROID_NOTE_MASTER_PLAN_V1.md",
+      "bytes": 121490,
+      "sha256": "343c3bccb5481bc20dd310f02901518f4618011073017f84b825ee2fdd20e727"
+    },
+    {
+      "path": "90_MASTER_AND_REFERENCE/CHANGELOG.md",
+      "bytes": 582,
+      "sha256": "abf4b5c863166a325ed2641f370279f90666c87e46a39762dc16e81274f847a9"
+    },
+    {
+      "path": "90_MASTER_AND_REFERENCE/REQUIREMENTS_BASELINE_V1.json",
+      "bytes": 47080,
+      "sha256": "1678bb842326cc7a1391b8c31e93b262e39f3e03abe55082b8d94d9f70790bcf"
+    },
+    {
+      "path": "90_MASTER_AND_REFERENCE/SOURCE_LEDGER_V1.md",
+      "bytes": 8813,
+      "sha256": "37d8b3ce955d775f05245cc7aa8d8f542d34b15ad40c628c86d4a64f292ae409"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1945,
+      "sha256": "b795d6c6868cf4d83a39ced60f070b1268159a88c88ef76b00938c02f971e69f"
+    }
+  ]
+}

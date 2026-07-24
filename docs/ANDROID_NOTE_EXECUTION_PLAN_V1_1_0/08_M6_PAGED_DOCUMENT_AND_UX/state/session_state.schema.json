@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "documentId",
+    "spaceId",
+    "camera",
+    "tool",
+    "revision"
+  ],
+  "properties": {
+    "documentId": {
+      "type": "string"
+    },
+    "spaceId": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "camera": {
+      "type": "object"
+    },
+    "tool": {
+      "type": "object"
+    },
+    "cleanShutdown": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StylusProbeEvent",
+  "type": "object",
+  "required": [
+    "sequence",
+    "monotonicNanos",
+    "actionMasked",
+    "deviceId",
+    "pointers"
+  ],
+  "properties": {
+    "sequence": {
+      "type": "integer"
+    },
+    "monotonicNanos": {
+      "type": "integer"
+    },
+    "eventTimeMillis": {
+      "type": "integer"
+    },
+    "actionMasked": {
+      "type": "integer"
+    },
+    "actionIndex": {
+      "type": "integer"
+    },
+    "actionButton": {
+      "type": "integer"
+    },
+    "buttonState": {
+      "type": "integer"
+    },
+    "source": {
+      "type": "integer"
+    },
+    "deviceId": {
+      "type": "integer"
+    },
+    "historySize": {
+      "type": "integer"
+    },
+    "canceled": {
+      "type": "boolean"
+    },
+    "pointers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "toolType",
+          "x",
+          "y",
+          "pressure"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "toolType": {
+            "type": "integer"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "pressure": {
+            "type": "number"
+          },
+          "tilt": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "orientation": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "distance": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "historical": {
+            "type": "array"
+          }
+        }
+      }
+    }
+  }
+}

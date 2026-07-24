@@ -1,0 +1,5 @@
+case_id,command_count,seed,expected
+smoke,100,1,no_diff
+medium,10000,42,no_unexplained_diff
+undo_branch,5000,2026,no_diff
+partial_erase,2000,77,no_diff_after_normalization

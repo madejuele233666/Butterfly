@@ -1,0 +1,81 @@
+package your.package.debug
+
+import android.os.SystemClock
+import android.view.KeyEvent
+import android.view.MotionEvent
+
+/**
+ * Template only. Keep this class debug-only.
+ * The sink must be a bounded in-memory ring buffer; do not write on each MOVE.
+ */
+class StylusProbe(private val sink: (ProbeEvent) -> Unit) {
+    fun record(event: MotionEvent) {
+        val pointers = buildList {
+            for (pointerIndex in 0 until event.pointerCount) {
+                val history = buildList {
+                    for (h in 0 until event.historySize) {
+                        add(HistoricalSample(
+                            timeMillis = event.getHistoricalEventTime(h),
+                            x = event.getHistoricalX(pointerIndex, h),
+                            y = event.getHistoricalY(pointerIndex, h),
+                            pressure = event.getHistoricalPressure(pointerIndex, h),
+                        ))
+                    }
+                }
+                add(PointerSample(
+                    id = event.getPointerId(pointerIndex),
+                    toolType = event.getToolType(pointerIndex),
+                    x = event.getX(pointerIndex),
+                    y = event.getY(pointerIndex),
+                    pressure = event.getPressure(pointerIndex),
+                    tilt = event.getAxisValue(MotionEvent.AXIS_TILT, pointerIndex),
+                    orientation = event.getOrientation(pointerIndex),
+                    distance = event.getAxisValue(MotionEvent.AXIS_DISTANCE, pointerIndex),
+                    historical = history,
+                ))
+            }
+        }
+        sink(ProbeEvent(
+            monotonicNanos = SystemClock.elapsedRealtimeNanos(),
+            eventTimeMillis = event.eventTime,
+            actionMasked = event.actionMasked,
+            actionIndex = event.actionIndex,
+            actionButton = event.actionButton,
+            buttonState = event.buttonState,
+            source = event.source,
+            deviceId = event.deviceId,
+            historySize = event.historySize,
+            pointers = pointers,
+        ))
+    }
+
+    fun recordKey(event: KeyEvent) {
+        // Add key events to a separate bounded stream.
+    }
+}
+
+// Replace with your serializable DTOs.
+data class ProbeEvent(
+    val monotonicNanos: Long,
+    val eventTimeMillis: Long,
+    val actionMasked: Int,
+    val actionIndex: Int,
+    val actionButton: Int,
+    val buttonState: Int,
+    val source: Int,
+    val deviceId: Int,
+    val historySize: Int,
+    val pointers: List<PointerSample>,
+)
+data class PointerSample(
+    val id: Int,
+    val toolType: Int,
+    val x: Float,
+    val y: Float,
+    val pressure: Float,
+    val tilt: Float,
+    val orientation: Float,
+    val distance: Float,
+    val historical: List<HistoricalSample>,
+)
+data class HistoricalSample(val timeMillis: Long, val x: Float, val y: Float, val pressure: Float)
