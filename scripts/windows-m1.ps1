@@ -37,6 +37,9 @@ $env:ANDROID_HOME = $AndroidSdk
 $env:ANDROID_SDK_ROOT = $AndroidSdk
 $env:ANDROID_AVD_HOME = Join-Path $MirrorRoot "avd"
 $env:JAVA_HOME = Join-Path $AndroidStudio "jbr"
+$env:PATHEXT = ".COM;.EXE;.BAT;.CMD"
+$env:PUB_CACHE = "C:\Users\27866\AppData\Local\Pub\Cache"
+$env:CARGO_NET_GIT_FETCH_WITH_CLI = "true"
 $env:Path = @(
     "$WindowsRoot\System32",
     $GitDirectory,
@@ -68,6 +71,9 @@ function Invoke-Checked {
     $startInfo.EnvironmentVariables["ANDROID_SDK_ROOT"] = $env:ANDROID_SDK_ROOT
     $startInfo.EnvironmentVariables["ANDROID_AVD_HOME"] = $env:ANDROID_AVD_HOME
     $startInfo.EnvironmentVariables["JAVA_HOME"] = $env:JAVA_HOME
+    $startInfo.EnvironmentVariables["PATHEXT"] = $env:PATHEXT
+    $startInfo.EnvironmentVariables["PUB_CACHE"] = $env:PUB_CACHE
+    $startInfo.EnvironmentVariables["CARGO_NET_GIT_FETCH_WITH_CLI"] = $env:CARGO_NET_GIT_FETCH_WITH_CLI
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $startInfo
     if (-not $process.Start()) { throw "Unable to start $Program" }
