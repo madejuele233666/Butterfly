@@ -2,7 +2,7 @@
 
 ## 目标
 
-在任何架构修改前，把 Notein 痛点和 Butterfly 现状转换为可重复数字。此阶段只加观测，不做优化。
+在第一个 M2 Handler 所有权切换前，冻结 Legacy 写操作的可重放行为 oracle，以及能发现接口层回归的最小性能基线。此阶段只加观测，不做优化，也不把完整产品性能验收提前成 M2 阻塞项。
 
 ## 构建要求
 
@@ -11,23 +11,38 @@
 - 体验复核使用 `personalRelease`；
 - Profile manifest 含 `<profileable android:shell="true"/>`。
 
+## 两层基线
+
+### M2 所有权切换门（本阶段必须）
+
+- 空文档和一个代表性压力文档；后者优先使用能稳定重放、确实进入实际画布 owner 的 F50，若当前实现无法稳定运行则记录所用的最接近 fixture 及原因；
+- 同一版本化操作序列至少重复三轮；
+- 每一步保存规范化文档状态、history cursor、revision 和 created/updated/removed 集合；
+- 重放由命令或 owner-boundary harness 驱动，人工操作只作交互 smoke，不作为等价性 oracle；
+- 在看到 M2 后测量前冻结行为相等规则和性能回归阈值。
+
+### 产品与技术决策基线（按需后置）
+
+Notein/原版/当前三方对照、0/1k/10k/50k/200k 完整规模曲线、personalRelease 长时间体验、240/480 fps 光学延迟，以及六类红线全量验收，分别在 M4 发布准备、M7 活动墨迹门和 M8 稳定渲染门按触发条件执行。它们不阻塞 M2，除非 M2 实际改动了对应责任边界。
+
 ## 数据集
 
-使用 `data/BENCHMARK_MATRIX.csv` 生成或保存固定文档：0、1k、10k、50k、200k 笔画。数据集必须版本化，不能每次手工随意画一页。
+M2 必测空文档和一个代表性压力文档。`data/BENCHMARK_MATRIX.csv` 中的完整 0、1k、10k、50k、200k 曲线保留给后续产品与渲染决策。所有被使用的数据集都必须版本化，不能每次手工随意画一页。
 
 ## 操作轨迹
 
-每个数据集执行：
+M2 的固定序列至少覆盖：
 
-1. 连续写 30 秒；
-2. 快速小字与长线；
-3. 平移和缩放；
-4. 整笔擦除 20 秒；
-5. 局部擦除 20 秒；
-6. 套索 500 笔并移动；
-7. undo/redo 各 100 次；
-8. 编辑后再连续写 30 秒；
-9. 关闭并冷启动恢复。
+1. CreateStroke；
+2. EraseStrokes；
+3. PartialErase；
+4. SelectByLasso + TranslateSelection；
+5. Undo、Redo 与 undo 后分支；
+6. 编辑后再次 CreateStroke；
+7. 未完成笔迹取消且不产生稳定提交；
+8. 保存、关闭和重开后的规范化状态。
+
+性能动作必须进入真实 document canvas，并让 `stroke.commit`、`stroke.foreground.update`、`viewport.bake`、`selection.raycast`、`document.save`、`history.undo` 和 `history.redo` 中与该序列对应的 owner trace 实际出现。
 
 ## 采集
 
@@ -43,16 +58,18 @@
 
 ## 退出门槛
 
-- [ ] 六类性能红线均有至少一项量化指标；
-- [ ] 空白、1k、10k、50k 数据齐全；
-- [ ] 能重现至少一个 Notein/Butterfly 长期卡顿场景或明确说明未重现；
-- [ ] 可区分活动笔画、Baking、编辑、保存和打开的时间；
+- [ ] Legacy 固定序列的逐步规范化状态、history cursor、revision 和 Delta 集合已冻结；
+- [ ] owner-boundary replay 可确定性重复，空文档和代表性压力文档各至少三轮；
+- [ ] 对应 owner trace 在真实 document canvas 上实际出现；
+- [ ] pre-M2 行为相等规则和性能回归阈值已在 post-M2 数据出现前冻结；
+- [ ] 可区分活动笔画、Baking、编辑、保存和历史操作的时间；
 - [ ] 基线 trace 与 APK 已归档。
 
 ## 交付物
 
 - `artifacts/runs/` 中的 run record；
 - Perfetto/Profiler 导出；
-- 指标汇总 CSV；
+- Legacy oracle/replay 版本及规范化状态；
+- 两个 fixture、每个至少三轮的指标汇总 CSV；
 - `BASELINE_REPORT.md`；
 - M2 优先拆分点 ADR。

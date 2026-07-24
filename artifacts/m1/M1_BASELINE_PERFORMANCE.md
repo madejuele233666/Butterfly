@@ -1,6 +1,6 @@
 # M1 baseline performance report
 
-Status: **partial Notea profile measurement; cross-product M1 baseline remains open**.
+Status: **instrumentation smoke passed; M2 ownership-cutover baseline remains open**.
 
 ## Run identity
 
@@ -81,7 +81,17 @@ does not cover a real document fixture and does not prove missed-frame count.
 ## Decision
 
 The current instrumentation is capable of quantifying native dispatch/history
-cost and Flutter frame distributions on the real device. M1 is not complete:
-Notein and pristine Butterfly parity runs, frozen document fixtures, the edit
-and undo workloads, personalRelease experience review and external optical
-latency remain required before architectural performance claims.
+cost and Flutter frame distributions on the real device. Because this run used
+the probe page, it did not enter the document owners and cannot authorize the
+first M2 Handler cutover.
+
+The remaining M2 gate is narrower and causal: freeze the Legacy operation
+oracle and deterministic owner-boundary replay, run it on an empty and a
+representative stress document at least three times in `devProfile`, observe
+the applicable stroke/bake/raycast/save/history traces, and freeze the parity
+and regression rules before post-M2 data exists.
+
+Notein/pristine/current comparison, the full scale curve, personalRelease
+endurance and optical latency remain useful later evidence, but do not block
+M2 because the backend interface does not own those product or active-rendering
+claims.

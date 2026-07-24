@@ -9,7 +9,21 @@ cases:
     commands: [CreateStroke, SelectByLasso, TranslateSelection]
   - id: undo-redo-branch
     commands: [CreateStroke, Undo, CreateStroke]
+  - id: redo-roundtrip
+    commands: [CreateStroke, Undo, Redo]
+  - id: cancel-no-commit
+    owner_actions: [begin_foreground_stroke, cancel_foreground_stroke]
+    expected: no_stable_commit
+  - id: save-reload
+    commands: [CreateStroke]
+    owner_actions: [save, close, open]
+    expected: normalized_state_roundtrip
 normalization:
   sort_elements_by: element_id
   ignore_fields: [render_cache, transient_foreground]
   float_quantization: 1e-6
+compare_after_each_step:
+  - normalized_document_state
+  - history_cursor
+  - revision
+  - created_updated_removed

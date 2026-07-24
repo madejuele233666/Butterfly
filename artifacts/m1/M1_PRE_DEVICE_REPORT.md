@@ -9,10 +9,12 @@ pre-device readiness boundary and is not an M1 PASS report.
 
 ## Acceptance boundary
 
-This report covers everything that can be prepared before the OPPO Pencil 2
-action matrix begins. It must not be changed to M1 PASS until the device
-capability JSON, Butterfly/Notein performance comparison, Perfetto trace and
-external high-speed-video evidence exist.
+This report covers everything that was prepared before the OPPO Pencil 2
+action matrix began. Its original all-in-one acceptance boundary has been
+superseded by the owner-specific gate in
+`docs/ANDROID_NOTE_EXECUTION_PLAN_V1_1_0/09_DECISION_GATES/M1_TO_M2_GATE.md`.
+This historical file is not an M1 PASS report: current input and performance
+status lives in the two reports linked above.
 
 ## Prepared surfaces
 
@@ -72,3 +74,9 @@ external high-speed-video evidence exist.
 - [ ] Notein versus pristine Butterfly versus current Profile baselines
 - [ ] Perfetto trace captured on the target tablet
 - [ ] 240/480 fps optical latency recordings and analysis
+
+The unchecked three-way comparison and optical recordings are later product,
+M7 or M8 evidence rather than prerequisites for the M2 backend ownership
+change. The authoritative remaining M2 items are the Legacy oracle,
+owner-boundary replay and two-fixture three-run document-canvas Profile
+baseline.

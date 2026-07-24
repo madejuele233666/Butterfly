@@ -9,3 +9,6 @@
 - [ ] Persistent/Temporary tool 分离
 - [ ] V1 工具栏无 Deferred 功能
 - [ ] personalRelease 日用测试
+- [ ] 文档模式、session 和工具状态分别只有一个 owner
+- [ ] 三个子能力各有确定性 owner-boundary replay
+- [ ] Notein 参考未被当成未经验证的产品 oracle

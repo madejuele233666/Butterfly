@@ -18,8 +18,10 @@ variant therefore has a separate Android data directory.
 
 1. Install `notea-m1-dev-debug.apk` over USB and launch the probe:
    `powershell -File scripts/windows-m1.ps1 start-probe -Device <serial>`.
-2. Open `/debug/m1`, reset, start, and execute all twelve actions shown on the
-   page. Do one run at 60 Hz and one at 120 Hz.
+2. Open `/debug/m1`, reset, start, and execute the full action matrix once to
+   establish observable fields. Request 60 Hz and 120 Hz separately, but record
+   the refresh rate reported by every event; retain an OS-forced transition as
+   mixed-refresh evidence instead of claiming a pure run.
 3. Stop and export once. Do not enable per-event Logcat.
 4. Pull the JSONL with the `pull-probe` action.
 5. Run `python scripts/m1_analyze_probe.py <run.jsonl> -o <summary.json>`.
@@ -29,14 +31,35 @@ variant therefore has a separate Android data directory.
    retained data. Promise press/hold/release behavior only if the ordinary app
    observes those distinct events.
 
-## Profile and Perfetto run
+Split actions into individually labelled traces only when shortcut or palm
+semantics are about to enter implementation. A consolidated trace proves event
+observability, not which action produced an ambiguous key pair or CANCEL.
+
+## M2 ownership-cutover baseline
+
+Before the first Handler is changed to emit a Command, freeze a deterministic
+Legacy oracle for CreateStroke, EraseStrokes, PartialErase,
+TranslateSelection, Undo, Redo, cancellation without commit, and save/reload.
+Record normalized document state, history cursor, revision and Delta sets after
+every step. Drive the replay at the owner boundary; manual input is only an
+interaction smoke test.
+
+Run the same versioned replay at least three times on an empty document and one
+representative stress fixture in `devProfile`. It must enter the real document
+canvas and fire the applicable `stroke.commit`, `stroke.foreground.update`,
+`viewport.bake`, `selection.raycast`, `document.save`, `history.undo`, and
+`history.redo` owner traces. Freeze equality and performance-regression rules
+before collecting post-M2 data.
+
+## Extended product and decision-gate baseline
 
 Use the same fixture, refresh mode, brightness, power/performance mode, battery
 range, and thermal starting state for every comparison. Disable Android Studio
 mirroring, scrcpy, screen recording, Layout Inspector, high-frequency Logcat,
 and unrelated background apps.
 
-For each F0/F1/F10/F50 fixture, replay the same 10-second input path and retain:
+When M4 release readiness, M7 active ink, or M8 stable rendering actually needs
+the broader evidence, expand to F0/F1/F10/F50 and the same versioned path. Retain:
 
 - Flutter frame P50/P90/P95/P99 and missed-frame count;
 - UI/build, raster, and platform-composition attribution;
@@ -45,6 +68,10 @@ For each F0/F1/F10/F50 fixture, replay the same 10-second input path and retain:
 
 Capture Perfetto with `scripts/windows-m1.ps1 perfetto -Device <serial>` while
 the `devProfile` build is foregrounded.
+
+Notein/pristine/current three-way comparison, the full scale curve,
+personalRelease endurance and optical video are not M2 prerequisites unless M2
+changes the owner they measure.
 
 ## 240/480 fps external-camera protocol
 
@@ -56,4 +83,6 @@ current build. Record contact-to-first-pixel, maximum moving gap, and lift-tail
 settling in video frames, then convert using the measured camera frame rate.
 
 An external video measures the optical end-to-end path. Flutter frame timings
-or touch timestamps cannot substitute for it.
+or touch timestamps cannot substitute for it. This is required to decide an
+end-to-end active-ink latency claim at M7 or release, not to introduce the M2
+backend interface.

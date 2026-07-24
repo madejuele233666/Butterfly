@@ -1,6 +1,6 @@
 # M1 physical device report
 
-Status: **partial physical evidence; M1 is not yet complete**.
+Status: **M2 input prerequisite satisfied; feature-specific semantics remain conditional**.
 
 ## Device identity
 
@@ -79,11 +79,16 @@ Those claims require isolated per-action traces.
 - `D:\files\Notea_Mirror\evidence\m1\m1-60hz-attempt-analysis.json`
 - `D:\files\Notea_Mirror\evidence\m1\device-5370fdbb\` screenshots.
 
-## Remaining M1-A gate
+## Conditional later gates
 
-- Isolate the 12 action-matrix steps into separately labelled runs when exact
-  shortcut and palm-sequence semantics are required.
-- Capture a stable device-info snapshot artifact rather than relying only on
-  the retained JSONL session header and this report.
-- Wi-Fi ADB is optional for daily development and was not verified in this USB
-  capability run.
+- Isolate the corresponding action-matrix steps only when exact shortcut or
+  palm-sequence semantics are about to enter implementation.
+- A standalone device-info snapshot improves archival completeness, but the
+  retained session identity is sufficient for the M2 backend responsibility
+  change.
+- Wi-Fi ADB remains an optional daily-development convenience.
+- The mixed-refresh 60 Hz attempt is sufficient to record the actual device
+  transition; a private forced pure-60-Hz two-finger run is not an M2 gate.
+
+None of these items blocks M2 because M2 does not change Pencil shortcut,
+palm-policy, device identity, refresh policy or ADB transport ownership.

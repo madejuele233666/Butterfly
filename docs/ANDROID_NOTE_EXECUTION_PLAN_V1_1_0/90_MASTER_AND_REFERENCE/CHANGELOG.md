@@ -1,5 +1,14 @@
 # 规划包变更记录
 
+## 1.1.1 — 2026-07-25
+
+- 根据当前 OPD2413 真机证据，从下游责任切换反推 M1→M8 的必要门槛；
+- M2 改为 Legacy oracle、owner-boundary replay、两档 fixture 三轮 Profile 和预冻结裁决规则；
+- M3/M4 改为按已实现命令和明确子集进行 Shadow/Authority 切换；
+- M5/M6 分别按几何能力和文档/session/UI owner 独立验收；
+- M7/M8 只在活动墨迹或 stable renderer 被证明为首个瓶颈时触发；
+- 需求基线和需求 SHA-256 不变。
+
 ## 1.1.0 — 2026-07-24
 
 - 整合 Android Studio、AVD、真机 USB/Wi-Fi 联调；

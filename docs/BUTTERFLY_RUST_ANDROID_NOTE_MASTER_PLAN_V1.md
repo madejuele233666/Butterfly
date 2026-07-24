@@ -1,8 +1,8 @@
 # Android 高性能手写笔记软件：Butterfly → Rust 后端渐进式重构主计划
 
 > 文档状态：**Frozen Baseline + Executable Plan**  
-> 版本：**1.1.0**  
-> 日期：**2026-07-24**  
+> 版本：**1.1.1**
+> 日期：**2026-07-25**
 > 目标设备：**OPPO Pad 4 Pro / Android 16 / 120 Hz / OPPO Pencil 2**  
 > 主项目路线：**Fork Butterfly，保持行为不变地抽离前后端，再让 Rust 后端逐项接管**  
 > 需求基线文件：`REQUIREMENTS_BASELINE_V1.json`  
@@ -39,6 +39,7 @@
 | 1.0.0 | 2026-07-24 | 初始基线 | 冻结原始需求、两轮 Grill 回答、Butterfly → Rust 渐进式重构计划。 |
 | 1.0.1 | 2026-07-24 | 调研事实与实现决策更新 | **保留 SQLite，不引入 redb**；取消“WAL + NORMAL 是既定答案”的假设；重写 SQLite schema、日志模式决策、checkpoint 调度、备份、完整性检查、维护和故障测试要求。需求基线未变化。 |
 | 1.1.0 | 2026-07-24 | 开发执行与文档工程更新 | 整合 Windows/Android Studio/AVD/真机无线联调、Debug/Profile/Release 构建、OPPO Pencil 2 输入探针、性能工具和 Root 诊断边界；新增按门槛切片的可执行阶段文档包。需求基线未变化。 |
+| 1.1.1 | 2026-07-25 | 第一性原理门槛收敛 | 依据当前真机证据，把 M1→M8 门槛改为 owner-specific oracle/replay/切换规则；完整产品矩阵移到对应发布或技术决策门。需求基线未变化。 |
 
 ---
 
@@ -677,7 +678,7 @@ Rust / SQLite
 2. **原版构建**：原样编译 `v2.5.3`，分别运行 AVD 与 OPPO 真机。
 3. **构建变体**：打通 `devDebug`、`devProfile`、`personalRelease`，分离 applicationId。
 4. **输入探针**：完成 MotionEvent ring buffer 与能力矩阵。
-5. **性能基线**：0/1k/10k/50k 笔画，记录写、擦、套索、undo 后的帧时间。
+5. **M2 定向基线**：在空文档和一个代表性压力文档上重放固定的写、擦、套索、undo 序列；完整规模曲线留到对应性能决策门。
 6. **自动测试**：在 AVD 跑保存重开、迁移、故障恢复、undo/redo。
 7. **第一次门控**：根据证据决定 M2 的优先拆分点，不允许在基线缺失时直接引入 Jetpack Ink 或替换 Baking。
 
@@ -689,14 +690,14 @@ Rust / SQLite
 | 阶段 | 权威状态 | 用户可见变化 | 退出门槛 |
 |---|---|---|---|
 | M0 基线冻结 | Butterfly 2.5.3 | 无 | tag、需求 hash、基准 APK、测试文档齐全 |
-| M1 可观测性与输入探针 | Butterfly | 仅调试页 | 能量化六类性能红线和 Pencil 2 事件能力 |
+| M1 可观测性与输入探针 | Butterfly | 仅调试页 | 输入事实已建立，且 M2 将改动的写操作可被行为 oracle 与定向 trace 比较 |
 | M2 后端接口抽离 | Legacy Dart | 行为不变 | UI/Handler 不再直接操作 DocumentBloc 元素集合 |
-| M3 Rust 影子后端 | Legacy Dart | 行为不变 | 固定命令集的规范化状态 100% 一致 |
-| M4 Rust 权威最小原型 | Rust | 无限画布、单笔、写/整笔擦、撤销 | 数据库、重启恢复、性能门槛通过 |
-| M5 编辑能力 | Rust | 局部擦、套索、移动 | 几何与事务测试通过，操作后无持续退化 |
-| M6 分页与直接恢复 | Rust | V1 完整范围 | 两种文档模式、恢复、最小工具栏通过 |
-| M7 活动墨迹决策门 | Rust | 可能无变化 | 决定保留 Flutter 或引入 Jetpack Ink |
-| M8 稳定渲染决策门 | Rust | 可能升级缓存 | 决定保留 Baking 或实现 tile cache |
+| M3 Rust 影子后端 | Legacy Dart | 行为不变 | M2 replay 逐命令 100% 一致，零未解释差异 |
+| M4 Rust 权威最小原型 | Rust（仅已切换命令） | 无限画布、单笔、写/整笔擦、撤销 | 最小命令子集 parity、单 writer、事务恢复和冻结性能门槛通过 |
+| M5 编辑能力 | Rust | 局部擦、套索、移动 | 每项独立语义/事务门通过，操作后无持续退化 |
+| M6 分页与直接恢复 | Rust | V1 完整范围 | 文档模式、session、UI 三个 owner 分别验收 |
+| M7 活动墨迹决策门 | Rust | 可能无变化 | 仅在 active path 触发条件成立时做同路径对照 |
+| M8 稳定渲染决策门 | Rust | 可能升级缓存 | 仅在 stable renderer owner 被证明是瓶颈时做 tile 对照 |
 
 ### 11.1 M0：不可变基线
 
@@ -732,6 +733,26 @@ android/app/src/main/kotlin/.../StylusProbePlugin.kt
 
 输出为 JSONL，而不是在每个事件上写日志到 Logcat。使用内存 ring buffer，测试结束后一次导出。
 
+#### 11.2.1 M1 到 M2 的最小充分门
+
+门槛从下游决策反推，不要求在 M2 前完成所有产品性能验收。
+
+M2 的 Commit 1（DTO/接口）和 Commit 2（尚未接管调用方的 Legacy adapter）
+是加法变更，可以在输入探针验证后立即开始。第一个 Handler 切换所有权前必须冻结：
+
+1. Legacy 写操作行为 oracle：CreateStroke、EraseStrokes、PartialErase、
+   TranslateSelection、Undo、Redo、取消中的笔迹和保存重开；
+2. 每一步的规范化文档状态、history cursor 与 created/updated/removed 集合；
+3. 可重复 owner-boundary replay，而不是依赖操作者手速；
+4. 当前 instrumented pre-M2 `devProfile` 基线：空文档和一个代表性压力文档，
+   固定序列至少重复三轮；
+5. 在看到 post-M2 数据前冻结行为一致和性能回归判定规则。
+
+以下项目不阻塞 M2：Notein 三方对比、纯 60 Hz 双指场景、12 项 Pencil
+动作各自独立 trace、Wi-Fi ADB、personalRelease 体验、240/480 fps 光学录像和
+六类红线的完整规模曲线。它们分别属于快捷键/掌托功能门、M4 以后发布门或
+M7/M8 技术选型门。若 M2 实际修改了对应责任边界，再把相关项目提升为门槛。
+
 ### 11.3 M2：抽离 Legacy 后端，不改行为
 
 目标是让现有代码先满足：
@@ -755,6 +776,10 @@ Handler -> DocumentBloc.add(ElementsChanged/Removed/Created) -> 多处副作用
 5. raycast/lasso 接口返回 ID，不返回 Renderer。
 6. 让前景预览仍使用旧 Renderer，但提交只通过 Backend。
 7. 所有行为均以 v2.5.3 为 oracle，先不“顺便修正”。
+
+DTO/接口和未接管调用方的 adapter 可以先行；第一个 Handler 切换前必须满足
+11.2.1 的 oracle、replay、两档 fixture 三轮基线与预冻结裁决规则。M2 验收只比较
+自己改变的 Handler → Backend → Delta 责任链，不以完整产品性能矩阵替代行为等价证据。
 
 ### 11.4 M3：Rust 影子执行
 
@@ -782,6 +807,11 @@ rust:   removed A, created B
 first mismatch: C.points[17].x
 ```
 
+M3 开始前固定 canonical state、ID/浮点/顺序规范化和允许忽略的纯缓存字段；
+不得在看到 diff 后扩大 ignore list 来制造一致。退出条件是 M2 固定 replay 和
+版本化属性序列对所有已实现命令零未解释差异。Shadow 队列、文件和开销必须有界，
+但数据库耐久性、活动墨迹和稳定渲染不属于本阶段责任。
+
 ### 11.5 M4：Rust 权威最小原型
 
 切换最小垂直链：
@@ -796,6 +826,11 @@ first mismatch: C.points[17].x
 
 此时仍保留 Butterfly 的 UI 与 stable renderer。所有旧功能可以继续只读显示，但只有迁移完成的 V1 命令允许写入 Rust 文档。
 
+Rust 只接管已经通过 Shadow parity 的最小命令子集。切换前冻结 schema、
+transaction/revision、恢复与 durability 语义，并通过新建、正常关闭、force-stop、
+事务/迁移中断、备份恢复和目标真机 SQLite profile。未迁移写功能关闭而不是双写；
+feature flag 回退也不得让 Legacy 与 Rust 同时写同一文件。
+
 ### 11.6 M5-M6：编辑与分页
 
 按以下顺序接管：
@@ -808,6 +843,25 @@ first mismatch: C.points[17].x
 6. 最小工具栏整理。
 
 顺序理由：分页依赖稳定的 Space/Element/Command/DB；不应先在旧 Bloc 上再实现一次。
+
+M5 的局部擦除、套索和移动分别冻结输入合同、语义来源、真实病例、不变量、
+单手势事务/历史/Delta 以及编辑后回归规则，并逐项切换。若有意修复 Legacy，
+先写 ADR，把行为变更与所有权迁移分开。
+
+M6 分别验收三个 owner：Paged/Infinite 文档模型、session 恢复、工具栏与临时工具状态。
+Notein 只作交互参考，不是未经验证的行为或性能 oracle；personalRelease 长时间使用是
+产品体验证据，不能替代恢复、事务和虚拟化的 owner-boundary 测试。
+
+### 11.7 后续阶段的统一门槛原则
+
+每次权威切换只要求能证明本次改变的责任链：
+
+1. 输入合同与当前 owner 已明确；
+2. 原行为或新需求的 oracle 已冻结；
+3. 同一确定性 replay 可在切换前后运行；
+4. 裁决规则在结果出现前冻结；
+5. 失败可观察且回退不会形成双 writer/双真相；
+6. 产品发布、光学延迟、完整容量曲线等只在对应 owner 或决策门被触发时升级为阻塞项。
 
 ---
 
@@ -2127,6 +2181,11 @@ space revision
 - 大画布平移频繁重 bake；
 - 局部 dirty bounds 仍引发大面积重建。
 
+这些现象必须在真实 document canvas、同一 fixture/replay 和关闭无关观测开销的
+Profile 对照中归因到 stable renderer/bake owner。仅看到总帧 P99、内存增长或
+编辑后卡顿，尚不足以判定 tile cache；应先排除输入、命令、DB、几何和全量错误失效。
+未触发时 M8 的正确结论是“保留 Baking”，不是继续实现。
+
 ### 34.3 目标 tile 设计
 
 ```text
@@ -2143,6 +2202,11 @@ TileKey(spaceId, zoomBucket, tileX, tileY, contentRevision)
 ## 35. Jetpack Ink Spike
 
 若触发 M7：
+
+触发证据必须先把首个超标位置归因到 active ink owner：历史样本在 native 已存在但
+当前 Flutter 消费链丢失，或 foreground update 持续主导预冻结的延迟/P99 门槛。
+光学录像用于裁决端到端显示延迟；Pencil 快捷键和掌托精确语义不是该 Spike 的前置条件，
+除非 Spike 同时改变它们的路由。
 
 1. 在 Butterfly 2.5.3 的 Flutter 3.44.1 上建立 Android native overlay 实验；
 2. 检查 OPPO Pad 4 Pro 的 Vulkan/Impeller 与 HCPP；
@@ -2342,9 +2406,10 @@ DocumentRevision
 ### M1
 
 - OPPO 设备能力 JSON；
-- Notein/Butterfly baseline 性能报告；
-- Perfetto trace；
-- 端到端高速录像协议。
+- 综合输入 trace 与未证明语义清单；
+- Legacy 行为 oracle 与 owner-boundary replay；
+- 空文档和代表性压力文档的三轮 pre-M2 Profile 基线；
+- 冻结的 M2 行为/回归裁决规则。
 
 ### M2
 
@@ -2352,7 +2417,8 @@ DocumentRevision
 - Legacy adapter；
 - ID-based selection；
 - command/delta model；
-- 无用户可见行为变化的 integration tests。
+- 与 Legacy oracle 逐命令一致的 integration tests；
+- 同 fixture/replay 的定向性能回归报告。
 
 ### M3
 
@@ -2360,7 +2426,8 @@ DocumentRevision
 - FRB bridge；
 - shadow executor；
 - canonical diff report；
-- parity gate。
+- 零未解释差异的 parity gate；
+- Shadow 资源上限与开启开销报告。
 
 ### M4
 
@@ -2369,6 +2436,7 @@ DocumentRevision
 - infinite minimal prototype；
 - crash consistency report；
 - performance report。
+- SQLite 配置、故障恢复与单 writer/回退报告。
 
 ### M5
 
@@ -2376,6 +2444,7 @@ DocumentRevision
 - lasso；
 - translate；
 - operation-after-performance regression suite。
+- 每项独立语义、事务和回退证据。
 
 ### M6
 
@@ -2383,20 +2452,24 @@ DocumentRevision
 - resume；
 - minimal Notein-inspired toolbar；
 - V1 acceptance report。
+- 文档模式、session 与 UI owner-boundary 验收。
 
 ## 43. 决策门
 
 ### Gate A：是否引入 Jetpack Ink
 
-只有 Flutter active path 未达标才进入；否则保持简单。
+只有 Flutter active path 在同 fixture/replay 的 Profile 与必要的光学证据中未达标，
+且首个超标 owner 已定位到活动墨迹链，才进入；否则保持 Flutter。
 
 ### Gate B：是否实现 tile cache
 
-只有 Baking 的局部失效仍未达标才进入。
+只有正确 dirty bounds 下 Baking/stable renderer 仍被同路径对照证明为瓶颈才进入；
+否则保留现有 Baking。
 
 ### Gate C：Rust 是否成为真相
 
-只有 shadow parity 覆盖所有 V1 命令并达到 100% 才切换。
+按命令子集切换：只有将要接管的命令全部通过 Shadow parity，且未迁移写功能关闭、
+单 writer 与回退边界成立，Rust 才成为该子集的真相。无需等待尚未接管的全部 V1 功能。
 
 ### Gate D：SQLite 文档是否切换为真实笔记真相源
 

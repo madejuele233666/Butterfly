@@ -1,6 +1,6 @@
-dataset_id,stroke_count,points_per_stroke,distribution,purpose
-empty,0,0,none,empty latency baseline
-normal_1k,1000,40,notebook-like,normal page
-heavy_10k,10000,40,dense notebook,large page
-stress_50k,50000,30,wide infinite canvas,viewport and index
-extreme_200k,200000,20,wide infinite canvas,non-V1 stress gate
+dataset_id,stroke_count,points_per_stroke,distribution,purpose,stage_gate
+empty,0,0,none,empty latency baseline,M2-required
+normal_1k,1000,40,notebook-like,normal page,later-scale-or-M2-fallback
+heavy_10k,10000,40,dense notebook,large page,later-scale-or-M2-fallback
+stress_50k,50000,30,wide infinite canvas,viewport and index,M2-preferred-stress-if-stable
+extreme_200k,200000,20,wide infinite canvas,non-V1 stress gate,later-only

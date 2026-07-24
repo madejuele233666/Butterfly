@@ -2,6 +2,22 @@
 
 Status: pending physical measurements.
 
+## M2 ownership-cutover gate
+
+- Legacy oracle/replay version:
+- Covered commands: CreateStroke / EraseStrokes / PartialErase /
+  TranslateSelection / Undo / Redo / cancel-no-commit / save-reload
+- Normalized state, history cursor, revision and Delta artifact:
+- Empty fixture hash and three run IDs:
+- Representative stress fixture hash and three run IDs:
+- Pre-frozen behavior equality rule:
+- Pre-frozen performance regression rule:
+- Observed owner traces:
+
+This section is required before the first M2 Handler cutover. The broader
+cross-product and six-red-line sections below are filled only when a later
+product, M7 or M8 decision needs them.
+
 ## Run identity
 
 - Application/build:

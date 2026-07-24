@@ -4,6 +4,16 @@
 
 完成冻结 V1：创建时分页/无限二选一、启动直接恢复、Notein 思路参考的高效率工具栏。不得在本阶段加入 PDF、AI、同步等 Deferred 功能。
 
+## 子能力门槛
+
+M6 包含三个不同 owner，按顺序独立验收：
+
+1. **文档模型 owner**：Paged/Infinite 只改变 Space 组织，不复制 Element、Command、Geometry、Undo 或 SQLite 真相；
+2. **session owner**：只恢复最后一次已提交的文档/页面/视角/工具状态，恢复失败显式报错且不写空文档；
+3. **UI owner**：工具栏只发已有命令并维护 Persistent/Temporary tool 状态，不成为文档真相。
+
+每个子能力开始前冻结输入合同、状态所有者、失败可观察信号和最小验收 replay。Notein 只提供交互参考，不作为无来源的性能或视觉 oracle。
+
 ## 分页实现
 
 - Infinite：一个无界 Space；
@@ -46,4 +56,5 @@
 - [ ] 启动恢复文档/页面/视角/工具；
 - [ ] 恢复失败不会覆盖数据；
 - [ ] 工具切换不超过冻结交互层级；
-- [ ] V1 全功能通过 Release 长时间使用。
+- [ ] 三个子能力各自的 owner-boundary replay 通过，且没有新增第二真相源；
+- [ ] V1 全功能通过 personalRelease 长时间使用；该体验证据不替代恢复、事务和虚拟化的 owner-boundary 测试。
