@@ -4,12 +4,11 @@ Captured on 2026-07-24 (Asia/Tokyo).
 
 ## Verdict
 
-The reproducible software baseline and AVD portion of M0 are complete. The M0
-exit gate is **BLOCKED on the physical device install confirmation**: Windows
-ADB sees authorized serial `5370fdbb`, but the secure lock screen suspended the
-OPlus package installer while `adb install -r` was pending. No claim is made
-that the corrected release APK has run on the physical target until install,
-launch, foreground-process, and log checks complete.
+The reproducible software baseline, AVD acceptance, and connected physical
+device acceptance are complete. The M0 exit gate is **PASS**. Windows ADB sees
+authorized serial `5370fdbb`; the corrected release APK installed, cold-started,
+remained in the foreground, rendered the Butterfly home screen, and produced no
+app-scoped fatal or plugin-registration error in the captured launch log.
 
 ## Immutable baseline
 
@@ -101,6 +100,31 @@ Build evidence:
 - Screenshot:
   `D:\files\Notea_Mirror\evidence\notea-m0-release-pass-20260724.png`.
 
+## Physical device acceptance
+
+- ADB serial: `5370fdbb`; reported manufacturer `OnePlus`, model `OPD2413`,
+  Android 16/API 36, physical size `2400x3392`. The device exposes OPlus system
+  components, but no retail market name was reported, so the evidence does not
+  infer a more specific product name.
+- Corrected production release installation returned `Success`; package manager
+  reports `versionName=2.5.3`, `versionCode=185`, `targetSdk=36`, and primary ABI
+  `arm64-v8a`.
+- Recorded cold launch returned `Status: ok`, `LaunchState: COLD`, and
+  `Activity: dev.linwood.butterfly/.MainActivity`; `TotalTime` was 224 ms for the
+  retained evidence run.
+- PID `18541` remained alive. `MainActivity` was resumed and not stopped, with a
+  visible, focused window.
+- App-scoped logcat records Vulkan Impeller, successful loading of
+  `libirondash_engine_context_native.so` and `libsuper_native_extensions.so`,
+  `App started`, and navigation to `home`. It contains no fatal exception,
+  `MissingPluginException`, unhandled exception, or native crash signal.
+- Evidence:
+  `D:\files\Notea_Mirror\evidence\notea-m0-oppo-device-20260724.log`,
+  `notea-m0-oppo-launch-20260724.log`,
+  `notea-m0-oppo-activity-20260724.log`,
+  `notea-m0-oppo-app-logcat-20260724.log`, and
+  `notea-m0-oppo-release-pass-20260724.png`.
+
 ## M0 checklist
 
 - [x] Windows Hypervisor Platform usable
@@ -114,7 +138,8 @@ Build evidence:
 - [x] Release APK starts on API 36 AVD
 - [x] Toolchain lock and reproducible scripts committed
 - [x] Physical device USB debugging authorized (`5370fdbb`)
-- [ ] Same release APK starts on OPPO Pad 4 Pro
+- [x] Corrected release APK starts on the connected OPlus physical device
 
-The last item requires completing the device-owned secure install confirmation;
-it cannot be inferred from AVD, build, screenshot, or host test evidence.
+M0 is complete for the recorded source, toolchain, AVD, and connected physical
+device. This does not by itself accept later feature milestones, stylus behavior,
+performance targets, or long-duration stability.
