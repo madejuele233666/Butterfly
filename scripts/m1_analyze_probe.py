@@ -37,11 +37,21 @@ def summarize(records: Iterable[dict[str, object]]) -> dict[str, object]:
     tilts: list[float] = []
     orientations: list[float] = []
     refresh_rates: set[float] = set()
+    refresh_rate_counts: Counter[str] = Counter()
+    refresh_rate_transitions: list[dict[str, object]] = []
+    previous_refresh_rate: float | None = None
     native_actions: Counter[str] = Counter()
     flutter_types: Counter[str] = Counter()
     flutter_kinds: Counter[str] = Counter()
     nonzero_buttons: Counter[str] = Counter()
     device_keys: set[tuple[object, ...]] = set()
+    key_events = 0
+    key_actions: Counter[str] = Counter()
+    key_codes: Counter[str] = Counter()
+    scan_codes: Counter[str] = Counter()
+    repeated_key_events = 0
+    max_repeat_count = 0
+    key_devices: set[tuple[object, ...]] = set()
     frame_build: list[int] = []
     frame_raster: list[int] = []
     frame_total: list[int] = []
@@ -53,7 +63,24 @@ def summarize(records: Iterable[dict[str, object]]) -> dict[str, object]:
         elif schema == "notea.m1.motion/v1":
             native_events += 1
             native_actions[str(record.get("actionMasked"))] += 1
-            refresh_rates.update(finite([record.get("refreshRateHz")]))
+            event_refresh_rates = finite([record.get("refreshRateHz")])
+            refresh_rates.update(event_refresh_rates)
+            if event_refresh_rates:
+                refresh_rate = event_refresh_rates[0]
+                refresh_rate_counts[str(refresh_rate)] += 1
+                if (
+                    previous_refresh_rate is not None
+                    and refresh_rate != previous_refresh_rate
+                ):
+                    refresh_rate_transitions.append(
+                        {
+                            "nativeEvent": native_events,
+                            "eventTimeNanos": record.get("eventTimeNanos"),
+                            "fromHz": previous_refresh_rate,
+                            "toHz": refresh_rate,
+                        }
+                    )
+                previous_refresh_rate = refresh_rate
             device = record.get("device")
             if isinstance(device, dict):
                 device_keys.add(
@@ -84,6 +111,28 @@ def summarize(records: Iterable[dict[str, object]]) -> dict[str, object]:
                 tilts.extend(finite(sample.get("tilt") for sample in samples))
                 orientations.extend(
                     finite(sample.get("orientation") for sample in samples)
+                )
+        elif schema == "notea.m1.key/v1":
+            key_events += 1
+            key_actions[str(record.get("action"))] += 1
+            key_codes[str(record.get("keyCode"))] += 1
+            scan_codes[str(record.get("scanCode"))] += 1
+            repeat_count = record.get("repeatCount")
+            if isinstance(repeat_count, int):
+                max_repeat_count = max(max_repeat_count, repeat_count)
+                if repeat_count > 0:
+                    repeated_key_events += 1
+            device = record.get("device")
+            if isinstance(device, dict):
+                key_devices.add(
+                    (
+                        device.get("id"),
+                        device.get("name"),
+                        device.get("vendorId"),
+                        device.get("productId"),
+                        device.get("descriptor"),
+                        device.get("sources"),
+                    )
                 )
         elif schema == "notea.m1.pointer/v1":
             flutter_pointers += 1
@@ -136,11 +185,22 @@ def summarize(records: Iterable[dict[str, object]]) -> dict[str, object]:
             "tilt": range_of(tilts),
             "orientation": range_of(orientations),
             "refreshRatesHz": sorted(refresh_rates),
+            "refreshRateEventCounts": dict(sorted(refresh_rate_counts.items())),
+            "refreshRateTransitions": refresh_rate_transitions,
             "nativeActions": dict(sorted(native_actions.items())),
             "flutterTypes": dict(sorted(flutter_types.items())),
             "flutterKinds": dict(sorted(flutter_kinds.items())),
             "nonzeroButtons": dict(sorted(nonzero_buttons.items())),
             "devices": [list(item) for item in sorted(device_keys, key=str)],
+        },
+        "keys": {
+            "nativeEvents": key_events,
+            "actions": dict(sorted(key_actions.items())),
+            "keyCodes": dict(sorted(key_codes.items())),
+            "scanCodes": dict(sorted(scan_codes.items())),
+            "repeatedEvents": repeated_key_events,
+            "maxRepeatCount": max_repeat_count,
+            "devices": [list(item) for item in sorted(key_devices, key=str)],
         },
         "frames": {
             "build": frame_stats(frame_build),

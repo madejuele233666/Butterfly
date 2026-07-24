@@ -1,0 +1,96 @@
+{
+  "schema": "notea.m1.device-capabilities/v1",
+  "status": "physical_probe_partial",
+  "device": {
+    "expected_model": "OPPO Pad 4 Pro",
+    "reported_manufacturer": "OnePlus",
+    "reported_model": "OPD2413",
+    "retail_identity_verified": false,
+    "build_fingerprint": "OnePlus/OPD2413/OP615EL1:16/AP3A.240617.008/V.4190afa-2071901-2076419:user/release-keys",
+    "android_api": 36,
+    "display_size_px": [2400, 3392],
+    "supported_refresh_rates_hz": [30.000002, 48.000004, 50.0, 60.000004, 90.0, 120.00001, 144.00002]
+  },
+  "input_devices": {
+    "motion": {
+      "name": "touchpanel_pen",
+      "tool_type": "stylus",
+      "android_tool_type": 2
+    },
+    "key": {
+      "name": "OnePlus Pencil",
+      "vendor_id": 13066,
+      "product_id": 1,
+      "key_code": 334,
+      "scan_code": 191
+    }
+  },
+  "runs": {
+    "120hz": {
+      "session_id": "m1-2026-07-24T19-25-47.642796Z",
+      "refresh_rate_event_counts": {"120.00001": 9871},
+      "native_events": 9871,
+      "native_current_samples": 9871,
+      "native_history_samples": 2674,
+      "native_total_samples": 12545,
+      "flutter_pointer_events": 9750,
+      "native_dropped": 0,
+      "flutter_dropped": 0,
+      "pressure": {"min": 0.0, "max": 1.0},
+      "tilt": {"min": 0.0, "max": 0.6349661946296692},
+      "orientation": {"min": -1.5707963705062866, "max": 2.9129793643951416},
+      "key_events": {"down": 15, "up": 4, "repeated": 11, "max_repeat_count": 11},
+      "cancel_events": 1
+    },
+    "60hz": {
+      "session_id": "m1-2026-07-24T19-33-03.942075Z",
+      "status": "mixed_refresh_due_to_two_finger_transition",
+      "refresh_rate_event_counts": {"60.000004": 14258, "120.00001": 1027},
+      "refresh_transition": {
+        "native_event": 14259,
+        "event_time_nanos": 584945832000000,
+        "from_hz": 60.000004,
+        "to_hz": 120.00001,
+        "first_event": "touchscreen ACTION_DOWN at the start of the two-finger sequence"
+      },
+      "native_events": 15285,
+      "native_current_samples": 15318,
+      "native_history_samples": 4619,
+      "native_total_samples": 19937,
+      "flutter_pointer_events": 15168,
+      "native_dropped": 0,
+      "flutter_dropped": 0,
+      "pressure": {"min": 0.0, "max": 1.0},
+      "tilt": {"min": 0.0, "max": 0.6029980182647705},
+      "orientation": {"min": -3.0578548908233643, "max": 3.141592502593994},
+      "key_events": {"down": 12, "up": 12, "repeated": 0, "max_repeat_count": 0},
+      "cancel_events": 3
+    }
+  },
+  "observations": {
+    "historical_samples_present": true,
+    "pressure_varies": true,
+    "tilt_varies": true,
+    "orientation_varies": true,
+    "hover_present": true,
+    "hover_distance_observed": {"min": 0.0, "max": 1.0},
+    "motion_button_state_nonzero_observed": false,
+    "pencil_key_down_up_observed": true,
+    "pencil_key_repeat_observed": true,
+    "action_cancel_observed": true,
+    "root_required_for_first_pass": false
+  },
+  "unresolved_semantics": {
+    "hover_press_release": "KeyEvent does not carry contact state; the combined run does not retain per-action labels.",
+    "contact_press_release": "KeyEvent does not carry contact state; the combined run does not retain per-action labels.",
+    "double_tap": "Down/up pairs are visible, but the combined run does not identify which pair belongs to the double-tap action.",
+    "palm_sequence_cancel_assignment": "ACTION_CANCEL exists, but the combined run does not isolate each palm sequence into its own trace.",
+    "pure_60hz_two_finger_run": "The standard 60 Hz setting was overridden to 120 Hz when the two-finger sequence began."
+  },
+  "evidence_files": [
+    "D:\\files\\Notea_Mirror\\evidence\\m1\\m1-2026-07-24T19-25-47.642796Z.jsonl",
+    "D:\\files\\Notea_Mirror\\evidence\\m1\\m1-120hz-analysis.json",
+    "D:\\files\\Notea_Mirror\\evidence\\m1\\m1-2026-07-24T19-33-03.942075Z.jsonl",
+    "D:\\files\\Notea_Mirror\\evidence\\m1\\m1-60hz-attempt-analysis.json"
+  ]
+}

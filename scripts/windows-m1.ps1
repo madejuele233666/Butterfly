@@ -139,8 +139,15 @@ switch ($Action) {
     }
     "pull-probe" {
         Require-Device
-        $remote = (& $Adb -s $Device shell run-as dev.linwood.butterfly.dev.debug sh -c 'ls -1t files/app_flutter/m1-probe/*.jsonl | head -n 1').Trim()
-        if (-not $remote) { throw "No exported M1 JSONL file was found." }
+        $probeDirectory = "app_flutter/m1-probe"
+        $exports = @(& $Adb -s $Device shell run-as dev.linwood.butterfly.dev.debug ls -1t $probeDirectory)
+        if ($LASTEXITCODE -ne 0) { throw "Unable to list exported M1 JSONL files." }
+        $fileName = $exports |
+            ForEach-Object { $_.Trim() } |
+            Where-Object { $_ -match '^m1-.*\.jsonl$' } |
+            Select-Object -First 1
+        if (-not $fileName) { throw "No exported M1 JSONL file was found." }
+        $remote = "$probeDirectory/$fileName"
         $target = Join-Path $EvidenceDirectory (Split-Path $remote -Leaf)
         $startInfo = New-Object System.Diagnostics.ProcessStartInfo
         $startInfo.FileName = $Adb

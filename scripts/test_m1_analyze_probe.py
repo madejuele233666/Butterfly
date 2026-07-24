@@ -40,6 +40,21 @@ class ProbeSummaryTest(unittest.TestCase):
                     "kind": "stylus",
                 },
                 {
+                    "schema": "notea.m1.key/v1",
+                    "action": 0,
+                    "keyCode": 334,
+                    "scanCode": 191,
+                    "repeatCount": 2,
+                    "device": {
+                        "id": 12,
+                        "name": "OnePlus Pencil",
+                        "vendorId": 13066,
+                        "productId": 1,
+                        "descriptor": "pencil",
+                        "sources": 257,
+                    },
+                },
+                {
                     "schema": "notea.m1.frame/v1",
                     "buildMicros": 1000,
                     "rasterMicros": 2000,
@@ -52,7 +67,23 @@ class ProbeSummaryTest(unittest.TestCase):
         self.assertEqual(motion["nativeHistoricalSamples"], 1)
         self.assertEqual(motion["flutterPointerEvents"], 1)
         self.assertEqual(motion["pressure"], {"min": 0.4, "max": 0.8})
+        self.assertEqual(motion["refreshRateEventCounts"], {"120.0": 1})
+        self.assertEqual(motion["refreshRateTransitions"], [])
         self.assertEqual(result["loss"], {"native": 1, "flutter": 2})
+        self.assertEqual(
+            result["keys"],
+            {
+                "nativeEvents": 1,
+                "actions": {"0": 1},
+                "keyCodes": {"334": 1},
+                "scanCodes": {"191": 1},
+                "repeatedEvents": 1,
+                "maxRepeatCount": 2,
+                "devices": [
+                    [12, "OnePlus Pencil", 13066, 1, "pencil", 257]
+                ],
+            },
+        )
 
     def test_percentile_uses_nearest_rank(self):
         self.assertEqual(percentile([4, 1, 3, 2], 0.95), 4)

@@ -1,6 +1,11 @@
 # M1 pre-device readiness report
 
-Status: **ready for physical device debugging; M1 physical evidence intentionally absent**.
+Status: **historical pre-device gate; physical work has started**.
+
+Current physical evidence and remaining gates are recorded in
+`artifacts/m1/M1_DEVICE_REPORT.md` and
+`artifacts/m1/M1_BASELINE_PERFORMANCE.md`. This file remains the record of the
+pre-device readiness boundary and is not an M1 PASS report.
 
 ## Acceptance boundary
 
