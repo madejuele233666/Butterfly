@@ -28,9 +28,10 @@ if /i "%~1"=="doctor" goto doctor
 if /i "%~1"=="test" goto test
 if /i "%~1"=="build-debug" goto build_debug
 if /i "%~1"=="build-release" goto build_release
+if /i "%~1"=="clean-android" goto clean_android
 if /i "%~1"=="devices" goto devices
 
-echo Usage: %~nx0 doctor^|test^|build-debug^|build-release^|devices 1>&2
+echo Usage: %~nx0 doctor^|test^|build-debug^|build-release^|clean-android^|devices 1>&2
 exit /b 2
 
 :doctor
@@ -60,6 +61,13 @@ call "%FLUTTER%" build apk --release --flavor production --no-pub > "%BUILD_LOG%
 set "BUILD_EXIT=%ERRORLEVEL%"
 type "%BUILD_LOG%"
 exit /b %BUILD_EXIT%
+
+:clean_android
+cd /d "%APP_ROOT%\android"
+call gradlew.bat --stop
+if errorlevel 1 exit /b %ERRORLEVEL%
+call gradlew.bat clean
+exit /b %ERRORLEVEL%
 
 :devices
 call "%FLUTTER%" --verbose devices
