@@ -13,6 +13,7 @@ Notea 是一个面向 Android 平板与手写笔的高性能笔记项目，以 B
 ## 分支契约
 
 - `baseline/v2.5.3-pristine`：必须始终指向上游 `v2.5.3` 提交 `a10a9787fd4fdc51c9426ead83ff063136015fb2`。
+- `baseline/v2.5.3-instrumented`：M1 可观测性工作的起点；初始提交与 pristine 相同。
 - `work/v1-main`：Notea 主开发分支。
 - `project/bootstrap-docs`：引入 Butterfly 前的文档初始化历史，只作追溯。
 
@@ -27,6 +28,7 @@ Notea 是一个面向 Android 平板与手写笔的高性能笔记项目，以 B
 - [分步执行包](docs/ANDROID_NOTE_EXECUTION_PLAN_V1_1_0/README.md)
 - [冻结项目基线](docs/project-baseline/README.md)
 - [M0：工具链与不可变 Butterfly 基线](docs/ANDROID_NOTE_EXECUTION_PLAN_V1_1_0/01_M0_TOOLCHAIN_AND_PRISTINE_BASELINE/EXECUTE.md)
+- [M0 实测报告与 OPPO 实机门禁](artifacts/m0/M0_REPORT.md)
 - [WSL / Windows 双环境与同步协议](docs/development/DUAL_ENVIRONMENT.md)
 - [Butterfly 上游项目](https://github.com/LinwoodDev/Butterfly)
 

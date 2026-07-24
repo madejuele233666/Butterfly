@@ -44,7 +44,25 @@ Set-Location D:\files\Notea_Mirror\workspace
 
 Windows 通常只需 `pull` 后执行测试；只有测试记录或 Windows 侧修复已经提交时才执行 `push`。
 
+## Windows M0 runner
+
+在 Windows 镜像中运行固定工具链动作：
+
+```powershell
+Set-Location D:\files\Notea_Mirror\workspace
+.\scripts\windows-m0.ps1 -Action doctor
+.\scripts\windows-m0.ps1 -Action test
+.\scripts\windows-m0.ps1 -Action build-debug
+.\scripts\windows-m0.ps1 -Action build-profile
+.\scripts\windows-m0.ps1 -Action build-release
+```
+
+`.cmd` 实现固定 `PATH`、SDK、Java、Pub cache 与 Cargo Git 传输；`.ps1`
+提供 PowerShell 入口和可观察退出码。构建日志写入 Windows 证据区。由于 Pub
+插件源码位于 `C:`、Android 构建位于 `D:`，Windows 用户级
+`%USERPROFILE%\.gradle\gradle.properties` 设置 `kotlin.incremental=false`，避免
+Kotlin 缓存路径转换器对跨盘符路径报错；该设置不改变应用语义。
+
 ## 冲突处理
 
 脚本遇到非 fast-forward 会停止。回到变更的责任环境人工检查提交图、解决冲突并完成普通 Git 合并或 rebase；禁止通过复制目录覆盖另一侧工作区。
-
