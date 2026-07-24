@@ -56,7 +56,7 @@ Set-Location $AppRoot
 Write-Host "Running Windows M0 action '$Action' from $AppRoot"
 $startInfo = New-Object System.Diagnostics.ProcessStartInfo
 $startInfo.FileName = "$env:SystemRoot\System32\cmd.exe"
-$startInfo.Arguments = "/d /c `"$CmdRunner`" $Action `"$EvidenceDirectory`""
+$startInfo.Arguments = '/d /s /c ""{0}" {1} "{2}""' -f $CmdRunner, $Action, $EvidenceDirectory
 $startInfo.WorkingDirectory = $AppRoot
 $startInfo.UseShellExecute = $false
 $startInfo.RedirectStandardOutput = $true
