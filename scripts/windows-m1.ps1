@@ -63,6 +63,11 @@ function Invoke-Checked {
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
     $startInfo.CreateNoWindow = $true
+    $startInfo.EnvironmentVariables["PATH"] = $env:Path
+    $startInfo.EnvironmentVariables["ANDROID_HOME"] = $env:ANDROID_HOME
+    $startInfo.EnvironmentVariables["ANDROID_SDK_ROOT"] = $env:ANDROID_SDK_ROOT
+    $startInfo.EnvironmentVariables["ANDROID_AVD_HOME"] = $env:ANDROID_AVD_HOME
+    $startInfo.EnvironmentVariables["JAVA_HOME"] = $env:JAVA_HOME
     $process = New-Object System.Diagnostics.Process
     $process.StartInfo = $startInfo
     if (-not $process.Start()) { throw "Unable to start $Program" }
