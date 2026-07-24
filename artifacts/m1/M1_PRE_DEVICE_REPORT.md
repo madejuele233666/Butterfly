@@ -1,6 +1,6 @@
 # M1 pre-device readiness report
 
-Status: **implementation in progress; physical evidence intentionally absent**.
+Status: **ready for physical device debugging; M1 physical evidence intentionally absent**.
 
 ## Acceptance boundary
 
@@ -23,17 +23,41 @@ external high-speed-video evidence exist.
   the probe is compile-time disabled in personal release.
 - Deterministic F0/F1/F10/F50/F200/FLONG/FFRAG/FPAGE generation is available.
 - Perfetto and 240/480 fps external-camera protocols are frozen.
+- `scripts/m1_analyze_probe.py` converts retained JSONL into sample, axis,
+  button, loss and frame-distribution observations without assigning shortcut
+  semantics that the action matrix has not proven.
+
+## Verified pre-device evidence
+
+- Application source/build commit: `7468b4823f7461599bef99b6706b77133abc7336`.
+- `flutter analyze --no-pub`: no issues found. Evidence:
+  `D:\files\Notea_Mirror\evidence\m1\flutter-analyze.log`.
+- `flutter test --no-pub`: 49 tests passed. Evidence:
+  `D:\files\Notea_Mirror\evidence\m1\flutter-test.log`.
+- Probe analyzer: two Python owner-boundary tests passed; Python bytecode
+  compilation passed.
+- All eight fixtures generated twice with identical SHA-256 values. The primary
+  manifest is `D:\files\Notea_Mirror\evidence\m1\fixtures\manifest.json`.
+- Final APKs and logs are under `D:\files\Notea_Mirror\evidence\m1`; hashes are
+  frozen in `artifacts/m1/apk-checksums.sha256`.
+- APK analyzer reports package IDs `dev.linwood.butterfly.dev.debug`,
+  `dev.linwood.butterfly.dev.profile`, and `dev.linwood.butterfly.personal`.
+- Generated BuildConfig reports M1 probe `true`, `true`, and `false`
+  respectively. The profile manifest contains `<profileable
+  android:shell="true" />`; personal release contains `android:shell="false"`.
+- APK DEX inspection confirms `StylusProbePlugin` and its capture/channel methods
+  are present in `devDebug`.
 
 ## Pre-device gate
 
-- [ ] Dart formatting and static analysis pass
-- [ ] Flutter tests pass, including ring-buffer ownership tests
-- [ ] Deterministic fixtures generate with a retained manifest
-- [ ] `devDebug` APK builds with probe enabled
-- [ ] `devProfile` APK builds and is profileable
-- [ ] `personalRelease` APK builds with probe disabled
-- [ ] APK package IDs and checksums are retained
-- [ ] Windows build/test evidence is retained outside Git
+- [x] Dart formatting and static analysis pass
+- [x] Flutter tests pass, including ring-buffer ownership tests
+- [x] Deterministic fixtures generate with a retained manifest
+- [x] `devDebug` APK builds with probe enabled
+- [x] `devProfile` APK builds and is profileable
+- [x] `personalRelease` APK builds with probe disabled
+- [x] APK package IDs and checksums are retained
+- [x] Windows build/test evidence is retained outside Git
 
 ## Physical work deliberately left open
 

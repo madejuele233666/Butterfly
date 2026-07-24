@@ -22,9 +22,10 @@ variant therefore has a separate Android data directory.
    page. Do one run at 60 Hz and one at 120 Hz.
 3. Stop and export once. Do not enable per-event Logcat.
 4. Pull the JSONL with the `pull-probe` action.
-5. Compare Android current+historical samples with Flutter PointerEvents.
+5. Run `python scripts/m1_analyze_probe.py <run.jsonl> -o <summary.json>`.
+6. Compare Android current+historical samples with Flutter PointerEvents.
    Every difference needs an explicit producer/consumer explanation.
-6. Fill `artifacts/m1/DEVICE_CAPABILITIES_OPPO_PAD4PRO.template.json` from the
+7. Fill `artifacts/m1/DEVICE_CAPABILITIES_OPPO_PAD4PRO.template.json` from the
    retained data. Promise press/hold/release behavior only if the ordinary app
    observes those distinct events.
 

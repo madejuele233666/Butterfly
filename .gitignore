@@ -30,6 +30,8 @@ key.properties
 build/
 coverage/
 pubspec_overrides.yaml
+__pycache__/
+*.pyc
 
 # Android and native build outputs
 .gradle/
@@ -42,4 +44,3 @@ target/
 artifacts/local/
 docs_old/
 snap/
-
