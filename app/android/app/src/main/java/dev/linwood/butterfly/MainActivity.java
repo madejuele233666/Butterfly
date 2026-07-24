@@ -90,7 +90,7 @@ public class MainActivity extends FlutterActivity {
         if (Intent.ACTION_VIEW.equals(action) || Intent.ACTION_EDIT.equals(action) || Intent.ACTION_SEND.equals(action)) {
             Uri uri = intent.getData();
             if (uri == null) {
-                uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                uri = getStreamUri(intent);
             }
             if (uri == null && intent.getClipData() != null && intent.getClipData().getItemCount() > 0) {
                 uri = intent.getClipData().getItemAt(0).getUri();
@@ -125,6 +125,15 @@ public class MainActivity extends FlutterActivity {
             }
         }
         return false;
+    }
+
+    @SuppressWarnings("deprecation")
+    private Uri getStreamUri(Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri.class);
+        }
+        // The typed overload does not exist on the project's supported API 24-32.
+        return intent.getParcelableExtra(Intent.EXTRA_STREAM);
     }
 
     private byte[] getBytes(InputStream inputStream) throws IOException {
