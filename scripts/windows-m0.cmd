@@ -32,6 +32,7 @@ cd /d "%APP_ROOT%"
 if errorlevel 1 exit /b %ERRORLEVEL%
 
 if /i "%~1"=="doctor" goto doctor
+if /i "%~1"=="pub-get" goto pub_get
 if /i "%~1"=="test" goto test
 if /i "%~1"=="build-debug" goto build_debug
 if /i "%~1"=="build-profile" goto build_profile
@@ -39,11 +40,15 @@ if /i "%~1"=="build-release" goto build_release
 if /i "%~1"=="clean-android" goto clean_android
 if /i "%~1"=="devices" goto devices
 
-echo Usage: %~nx0 doctor^|test^|build-debug^|build-profile^|build-release^|clean-android^|devices 1>&2
+echo Usage: %~nx0 doctor^|pub-get^|test^|build-debug^|build-profile^|build-release^|clean-android^|devices 1>&2
 exit /b 2
 
 :doctor
 call "%FLUTTER%" doctor -v
+exit /b %ERRORLEVEL%
+
+:pub_get
+call "%FLUTTER%" pub get
 exit /b %ERRORLEVEL%
 
 :test
