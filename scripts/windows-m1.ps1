@@ -107,6 +107,10 @@ function Build-Apk {
     if ($sourceChanges.Count -ne 0) {
         throw "Refusing a provenance build from a dirty Windows worktree."
     }
+    $buildDirectory = Join-Path $AppRoot "build"
+    if (Test-Path $buildDirectory) {
+        Remove-Item -Recurse -Force $buildDirectory
+    }
     $define = "M1_PROBE_ENABLED=$($ProbeEnabled.ToString().ToLowerInvariant())"
     Invoke-Checked $Flutter @(
         "build", "apk", "--$Mode", "--flavor", $Flavor,
