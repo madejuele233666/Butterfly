@@ -110,7 +110,7 @@ function Initialize-MsvcEnvironment {
 
     $startInfo = New-Object System.Diagnostics.ProcessStartInfo
     $startInfo.FileName = "$WindowsRoot\System32\cmd.exe"
-    $startInfo.Arguments = '/d /s /c "call ""{0}"" >nul && set"' -f $vcvars
+    $startInfo.Arguments = '/d /c call "{0}" >nul && set' -f $vcvars
     $startInfo.UseShellExecute = $false
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
