@@ -43,9 +43,9 @@ Evidence snapshot on 2026-07-25:
 - Windows focused Legacy oracle suite: 3 tests passed.
 - Windows full Flutter suite: 52 tests passed on the formatted sources.
 - WSL Python suites: 5 tests passed; validator/analyzer bytecode compiled.
-- Profile APK provenance source: `1358da7e740ccd35ebb98003e7bfa3703c41c1a8`
-  with a clean Windows worktree. The later `965cf5c78` commit is Dart formatter
-  output only and was re-analyzed and fully tested.
+- Profile APK provenance source: `2e39a1595d44b38db3f2a71f3b8adf75f6c78c15`
+  with a clean Windows worktree. This source includes the final Dart formatter
+  output and the completed host-readiness record.
 - Profile APK SHA-256:
   `d900674dca0acaefa3d4fd99778d3b79bc7c19bb3899cd39b2d2cc762070f99b`.
 
