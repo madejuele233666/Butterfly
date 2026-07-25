@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:butterfly/debug/performance/m1_baseline_export_stub.dart'
     if (dart.library.io) 'm1_baseline_export_io.dart';

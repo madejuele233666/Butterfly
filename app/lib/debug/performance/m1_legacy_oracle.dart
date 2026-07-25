@@ -392,9 +392,8 @@ final class M1LegacyOracleRunner {
             before.elements[id] != after.elements[id])
         .toList()
       ..sort();
-    return {
+    final record = <String, Object?>{
       'name': name,
-      if (ownerAction != null) 'ownerAction': ownerAction,
       'sequenceRevision': _sequenceRevision,
       'historyPosition': _historyPosition,
       'historyHead': _historyHead,
@@ -413,6 +412,8 @@ final class M1LegacyOracleRunner {
         },
       },
     };
+    if (ownerAction != null) record['ownerAction'] = ownerAction;
+    return record;
   }
 }
 
@@ -442,6 +443,10 @@ _NormalizedSnapshot _snapshotPage(
   final elements = <String, String>{};
   final layerOrder = <String, List<String>>{};
   for (final layer in page.layers) {
+    final layerId = layer.id;
+    if (layerId == null || layerId.isEmpty) {
+      throw StateError('M1 oracle requires stable non-empty layer IDs');
+    }
     final ids = <String>[];
     for (final element in layer.content) {
       final id = element.id;
@@ -454,7 +459,7 @@ _NormalizedSnapshot _snapshotPage(
       ids.add(id);
       elements[id] = _canonicalJson(element.toJson());
     }
-    layerOrder[layer.id] = ids;
+    layerOrder[layerId] = ids;
   }
   final sortedIds = elements.keys.toList()..sort();
   final canonical = StringBuffer()
