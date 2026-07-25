@@ -96,6 +96,42 @@ function Invoke-Checked {
     }
 }
 
+function Initialize-MsvcEnvironment {
+    if (Get-Command link.exe -CommandType Application -ErrorAction SilentlyContinue) {
+        return
+    }
+    $vcvars = @(
+        "D:\DevTools\VS2022BuildTools\VC\Auxiliary\Build\vcvars64.bat",
+        "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+    ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if (-not $vcvars) {
+        throw "MSVC x64 tools are missing. Install Microsoft.VisualStudio.Component.VC.Tools.x86.x64."
+    }
+
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $startInfo.FileName = "$WindowsRoot\System32\cmd.exe"
+    $startInfo.Arguments = '/d /s /c "call ""{0}"" >nul && set"' -f $vcvars
+    $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $startInfo.CreateNoWindow = $true
+    $process = [System.Diagnostics.Process]::Start($startInfo)
+    $environmentLines = $process.StandardOutput.ReadToEnd()
+    $errorText = $process.StandardError.ReadToEnd()
+    $process.WaitForExit()
+    if ($process.ExitCode -ne 0) {
+        throw "Unable to initialize MSVC with $vcvars. $errorText"
+    }
+    foreach ($line in $environmentLines -split "`r?`n") {
+        if ($line -match '^([^=]+)=(.*)$') {
+            [Environment]::SetEnvironmentVariable($Matches[1], $Matches[2], "Process")
+        }
+    }
+    if (-not (Get-Command link.exe -CommandType Application -ErrorAction SilentlyContinue)) {
+        throw "MSVC initialized without an x64 link.exe on PATH."
+    }
+}
+
 function Build-Apk {
     param([string]$Flavor, [string]$Mode, [bool]$ProbeEnabled)
     $sourceCommit = (& $Git -C $Workspace rev-parse HEAD).Trim()
@@ -107,6 +143,7 @@ function Build-Apk {
     if ($sourceChanges.Count -ne 0) {
         throw "Refusing a provenance build from a dirty Windows worktree."
     }
+    Initialize-MsvcEnvironment
     $buildDirectory = Join-Path $AppRoot "build"
     if (Test-Path $buildDirectory) {
         Remove-Item -Recurse -Force $buildDirectory
