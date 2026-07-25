@@ -40,6 +40,30 @@ def _comparable_run(run: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def combine_sessions(sessions: list[dict[str, Any]]) -> dict[str, Any]:
+    if not sessions:
+        raise ValueError("at least one session is required")
+    combined = dict(sessions[0])
+    combined["runs"] = []
+    identity_fields = (
+        "schema",
+        "fixture",
+        "replayVersion",
+        "normalizationVersion",
+        "decisionRulesVersion",
+    )
+    for index, session in enumerate(sessions, 1):
+        for field in identity_fields:
+            if session.get(field) != combined.get(field):
+                raise ValueError(f"session {index}: {field} differs from session 1")
+        runs = session.get("runs")
+        if not isinstance(runs, list):
+            raise ValueError(f"session {index}: runs must be a list")
+        combined["runs"].extend(runs)
+    combined["completedRuns"] = len(combined["runs"])
+    return combined
+
+
 def validate_session(
     session: dict[str, Any], rules: dict[str, Any]
 ) -> dict[str, Any]:
@@ -89,7 +113,7 @@ def validate_session(
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("session", type=Path)
+    parser.add_argument("session", type=Path, nargs="+")
     parser.add_argument(
         "--rules",
         type=Path,
@@ -98,7 +122,8 @@ def main() -> int:
     parser.add_argument("-o", "--output", type=Path)
     args = parser.parse_args()
 
-    result = validate_session(_load(args.session), _load(args.rules))
+    sessions = [_load(path) for path in args.session]
+    result = validate_session(combine_sessions(sessions), _load(args.rules))
     rendered = json.dumps(result, indent=2, sort_keys=True)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

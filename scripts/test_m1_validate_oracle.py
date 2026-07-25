@@ -3,7 +3,7 @@ import json
 import unittest
 from pathlib import Path
 
-from scripts.m1_validate_oracle import validate_session
+from scripts.m1_validate_oracle import combine_sessions, validate_session
 
 
 RULES = json.loads(
@@ -62,6 +62,24 @@ class OracleValidationTest(unittest.TestCase):
         value["completedRuns"] = 2
         result = validate_session(value, RULES)
         self.assertFalse(result["valid"])
+
+    def test_combines_independent_single_run_sessions(self):
+        values = []
+        for run in session()["runs"]:
+            value = session()
+            value["runs"] = [run]
+            value["completedRuns"] = 1
+            values.append(value)
+        combined = combine_sessions(values)
+        result = validate_session(combined, RULES)
+        self.assertTrue(result["valid"], result["errors"])
+
+    def test_combine_rejects_identity_mismatch(self):
+        first = session()
+        second = session()
+        second["fixture"] = "F50"
+        with self.assertRaisesRegex(ValueError, "fixture differs"):
+            combine_sessions([first, second])
 
 
 if __name__ == "__main__":
