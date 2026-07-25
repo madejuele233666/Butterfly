@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:butterfly/bloc/document_bloc.dart';
 import 'package:butterfly/cubits/current_index.dart';
 import 'package:butterfly/cubits/settings.dart';
@@ -139,4 +141,3 @@ void main() {
     );
   });
 }
-import 'dart:convert';
