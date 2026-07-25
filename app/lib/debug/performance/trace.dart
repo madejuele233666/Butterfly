@@ -8,6 +8,8 @@ abstract final class M1TraceName {
   static const stylusHistoryDecode = 'stylus.history.decode';
   static const strokeForegroundUpdate = 'stroke.foreground.update';
   static const strokeCommit = 'stroke.commit';
+  static const legacyOracleApplyEvent = 'm1.oracle.apply_legacy_event';
+  static const legacyOracleNormalize = 'm1.oracle.normalize';
   static const backendApplyCommand = 'backend.apply_command';
   static const rustApplyCommand = 'rust.apply_command';
   static const sqliteBegin = 'sqlite.begin';

@@ -51,6 +51,46 @@ canvas and fire the applicable `stroke.commit`, `stroke.foreground.update`,
 `history.redo` owner traces. Freeze equality and performance-regression rules
 before collecting post-M2 data.
 
+### Prepared execution path
+
+On Windows, first complete all host-side gates and build the exact Profile APK:
+
+```powershell
+Set-Location D:\files\Notea_Mirror\workspace
+.\scripts\windows-m1.ps1 -Action prepare-m2-baseline
+```
+
+This runs analysis, the focused Legacy oracle tests, deterministic fixture
+generation and the `devProfile` build. The device phase then consists of two
+three-run sessions:
+
+```powershell
+.\scripts\windows-m1.ps1 -Action start-baseline -Device <serial> -Fixture F0 -Runs 3
+.\scripts\windows-m1.ps1 -Action pull-baseline -Device <serial> -Runs 3
+python scripts\m1_validate_oracle.py `
+  D:\files\Notea_Mirror\evidence\m1\baseline\<f0-session>.json
+
+.\scripts\windows-m1.ps1 -Action start-baseline -Device <serial> -Fixture F50 -Runs 3
+.\scripts\windows-m1.ps1 -Action pull-baseline -Device <serial> -Runs 3
+python scripts\m1_validate_oracle.py `
+  D:\files\Notea_Mirror\evidence\m1\baseline\<f50-session>.json
+```
+
+`start-baseline` installs the retained Profile APK, creates a fresh fixture for
+every run, opens the real document canvas and automatically executes the
+versioned Legacy replay. It writes one aggregate oracle JSON plus one
+Pointer/Frame JSONL per run. The only authority for equality and regression is
+`artifacts/m1/M1_M2_DECISION_RULES.json`; changing it requires a superseding ADR
+before affected post-M2 data is collected.
+
+Run Perfetto from a second PowerShell before invoking `start-baseline`, so the
+automatic replay is inside the trace window. The automated path exercises
+Legacy element events, undo/redo, raycast and bake. On a separate clean F0
+Profile session, manually write one stroke and save once to observe
+`stroke.foreground.update`, `stroke.commit` and `document.save`; these manual
+owner traces are presence/performance evidence, not the deterministic behavior
+oracle.
+
 ## Extended product and decision-gate baseline
 
 Use the same fixture, refresh mode, brightness, power/performance mode, battery

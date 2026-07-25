@@ -8,6 +8,8 @@ import 'package:butterfly/bloc/document_bloc.dart';
 import 'package:butterfly/cubits/current_index.dart';
 import 'package:butterfly/cubits/settings.dart';
 import 'package:butterfly/cubits/transform.dart';
+import 'package:butterfly/debug/performance/m1_baseline_panel.dart';
+import 'package:butterfly/debug/performance/m1_legacy_oracle.dart';
 import 'package:butterfly/embed/embedding.dart';
 import 'package:butterfly/models/defaults.dart';
 import 'package:butterfly/renderers/renderer.dart';
@@ -44,6 +46,9 @@ class ProjectPage extends StatefulWidget {
   final String type;
   final Object? data;
   final String? uri;
+  final M1BaselineRunConfig? m1BaselineRun;
+  final ValueChanged<M1LegacyReplayResult>? onM1BaselineCompleted;
+  final ValueChanged<Object>? onM1BaselineFailed;
 
   const ProjectPage({
     super.key,
@@ -53,6 +58,9 @@ class ProjectPage extends StatefulWidget {
     this.data,
     this.uri,
     this.absolute = false,
+    this.m1BaselineRun,
+    this.onM1BaselineCompleted,
+    this.onM1BaselineFailed,
   });
 
   @override
@@ -505,7 +513,23 @@ class _ProjectPageState extends State<ProjectPage> {
                                                           ?.editable !=
                                                       false,
                                             ),
-                                      body: const _MainBody(),
+                                      body: Stack(
+                                        children: [
+                                          const _MainBody(),
+                                          if (widget.m1BaselineRun != null)
+                                            M1BaselinePanel(
+                                              bloc: _bloc!,
+                                              config: widget.m1BaselineRun!,
+                                              onCompleted:
+                                                  widget
+                                                      .onM1BaselineCompleted ??
+                                                  (_) {},
+                                              onFailed:
+                                                  widget.onM1BaselineFailed ??
+                                                  (_) {},
+                                            ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

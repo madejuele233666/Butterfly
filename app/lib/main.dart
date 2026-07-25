@@ -30,6 +30,8 @@ import 'package:talker_flutter/talker_flutter.dart';
 import 'cubits/settings.dart';
 import 'debug/performance/m1_probe.dart';
 import 'debug/performance/m1_probe_page.dart';
+import 'debug/performance/m1_baseline_page.dart';
+import 'debug/performance/m1_fixture.dart';
 import 'embed/embedding.dart';
 import 'settings/inputs/home.dart';
 import 'settings/inputs/keyboard.dart';
@@ -316,6 +318,23 @@ class ButterflyApp extends StatelessWidget {
         name: 'm1-probe',
         path: '/debug/m1',
         builder: (context, state) => const M1ProbePage(),
+      ),
+      GoRoute(
+        name: 'm1-baseline',
+        path: '/debug/m1-baseline/:fixture',
+        builder: (context, state) {
+          final fixture = M1FixtureId.fromLabel(
+            state.pathParameters['fixture'] ?? '',
+          );
+          if (fixture == null) {
+            return const ErrorPage(message: 'Unknown M1 baseline fixture');
+          }
+          final requestedRuns = int.tryParse(
+            state.uri.queryParameters['runs'] ?? '',
+          );
+          final runs = requestedRuns == null ? 3 : requestedRuns.clamp(1, 10);
+          return M1BaselinePage(fixture: fixture, runs: runs);
+        },
       ),
       GoRoute(
         name: 'embed',

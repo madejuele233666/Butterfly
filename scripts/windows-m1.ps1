@@ -2,10 +2,15 @@ param(
     [ValidateSet(
         "pub-get", "analyze", "test", "fixtures",
         "build-dev-debug", "build-dev-profile", "build-personal-release",
-        "prepare-all", "start-probe", "pull-probe", "perfetto"
+        "prepare-all", "prepare-m2-baseline", "start-probe", "pull-probe",
+        "start-baseline", "pull-baseline", "perfetto"
     )]
     [string]$Action = "prepare-all",
     [string]$Device,
+    [ValidateSet("F0", "F1", "F10", "F50")]
+    [string]$Fixture = "F0",
+    [ValidateRange(1, 10)]
+    [int]$Runs = 3,
     [string]$EvidenceDirectory = "D:\files\Notea_Mirror\evidence\m1"
 )
 
@@ -106,6 +111,31 @@ function Require-Device {
     if (-not $Device) { throw "-Device is required for action '$Action'." }
 }
 
+function Copy-RunAsFile {
+    param(
+        [string]$Package,
+        [string]$Remote,
+        [string]$Target
+    )
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $startInfo.FileName = $Adb
+    $startInfo.Arguments = "-s $Device exec-out run-as $Package cat $Remote"
+    $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.CreateNoWindow = $true
+    $process = [System.Diagnostics.Process]::Start($startInfo)
+    $stream = [System.IO.File]::Create($Target)
+    try {
+        $process.StandardOutput.BaseStream.CopyTo($stream)
+        $process.WaitForExit()
+        $pullExitCode = $process.ExitCode
+    } finally {
+        $stream.Dispose()
+        $process.Dispose()
+    }
+    if ($pullExitCode -ne 0) { throw "Unable to pull $Remote" }
+}
+
 switch ($Action) {
     "pub-get" { Invoke-Checked $Flutter @("pub", "get") "flutter-pub-get.log" }
     "analyze" { Invoke-Checked $Flutter @("analyze", "--no-pub") "flutter-analyze.log" }
@@ -130,6 +160,19 @@ switch ($Action) {
         Build-Apk "dev" "debug" $true
         Build-Apk "dev" "profile" $true
         Build-Apk "personal" "release" $false
+    }
+    "prepare-m2-baseline" {
+        Invoke-Checked $Flutter @("pub", "get") "flutter-pub-get.log"
+        Invoke-Checked $Flutter @("analyze", "--no-pub") "flutter-analyze.log"
+        Invoke-Checked $Flutter @(
+            "test", "--no-pub",
+            "test\debug\performance\m1_legacy_oracle_test.dart"
+        ) "m1-legacy-oracle-test.log"
+        Invoke-Checked $Dart @(
+            "run", "tool\m1_fixture_generator.dart",
+            (Join-Path $EvidenceDirectory "fixtures")
+        ) "fixture-generator.log"
+        Build-Apk "dev" "profile" $true
     }
     "start-probe" {
         Require-Device
@@ -167,6 +210,53 @@ switch ($Action) {
         }
         if ($pullExitCode -ne 0) { throw "Unable to pull M1 JSONL." }
         Write-Host "Pulled $remote to $target"
+    }
+    "start-baseline" {
+        Require-Device
+        $apk = Join-Path $EvidenceDirectory "apk\notea-m1-dev-profile.apk"
+        if (-not (Test-Path $apk)) {
+            throw "Profile APK is missing. Run -Action prepare-m2-baseline first."
+        }
+        & $Adb -s $Device install -r $apk
+        if ($LASTEXITCODE -ne 0) { throw "Unable to install M1 profile APK." }
+        & $Adb -s $Device shell am force-stop dev.linwood.butterfly.dev.profile
+        & $Adb -s $Device shell am start -S -W `
+            -n dev.linwood.butterfly.dev.profile/dev.linwood.butterfly.MainActivity `
+            --es m1BaselineFixture $Fixture --ei m1BaselineRuns $Runs
+        if ($LASTEXITCODE -ne 0) { throw "Unable to launch M1 baseline." }
+    }
+    "pull-baseline" {
+        Require-Device
+        $package = "dev.linwood.butterfly.dev.profile"
+        $targetDirectory = Join-Path $EvidenceDirectory "baseline"
+        New-Item -ItemType Directory -Force -Path $targetDirectory | Out-Null
+
+        $baselineDirectory = "files/m1-baseline"
+        $baselineFiles = @(& $Adb -s $Device shell run-as $package ls -1t $baselineDirectory)
+        if ($LASTEXITCODE -ne 0) { throw "Unable to list M1 baseline exports." }
+        $baselineFile = $baselineFiles |
+            ForEach-Object { $_.Trim() } |
+            Where-Object { $_ -match '^m1-baseline-.*\.json$' } |
+            Select-Object -First 1
+        if (-not $baselineFile) { throw "No M1 baseline JSON was found." }
+        Copy-RunAsFile $package "$baselineDirectory/$baselineFile" `
+            (Join-Path $targetDirectory $baselineFile)
+
+        $probeDirectory = "app_flutter/m1-probe"
+        $probeFiles = @(& $Adb -s $Device shell run-as $package ls -1t $probeDirectory)
+        if ($LASTEXITCODE -ne 0) { throw "Unable to list M1 probe exports." }
+        $selectedProbeFiles = $probeFiles |
+            ForEach-Object { $_.Trim() } |
+            Where-Object { $_ -match '^m1-.*\.jsonl$' } |
+            Select-Object -First $Runs
+        if ($selectedProbeFiles.Count -ne $Runs) {
+            throw "Expected $Runs probe JSONL files, found $($selectedProbeFiles.Count)."
+        }
+        foreach ($probeFile in $selectedProbeFiles) {
+            Copy-RunAsFile $package "$probeDirectory/$probeFile" `
+                (Join-Path $targetDirectory $probeFile)
+        }
+        Write-Host "Pulled baseline JSON and $Runs probe runs to $targetDirectory"
     }
     "perfetto" {
         Require-Device

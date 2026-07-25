@@ -1,6 +1,6 @@
 # M1 baseline performance report
 
-Status: **instrumentation smoke passed; M2 ownership-cutover baseline remains open**.
+Status: **host-side oracle/replay path prepared; target-device M2 baseline remains open**.
 
 ## Run identity
 
@@ -95,3 +95,24 @@ Notein/pristine/current comparison, the full scale curve, personalRelease
 endurance and optical latency remain useful later evidence, but do not block
 M2 because the backend interface does not own those product or active-rendering
 claims.
+
+## Prepared after the exploratory run
+
+- Shared deterministic fixture producer is used by both the command-line
+  generator and the in-app baseline route.
+- `/debug/m1-baseline/F0` and `/debug/m1-baseline/F50` create a fresh real
+  document canvas for each requested run and execute `legacy-elements-v1`.
+- The oracle records an exact normalized state hash, layer order,
+  created/updated/removed payloads, observed history position and undo/redo
+  capability after every step. Its sequence revision and history position are
+  explicitly diagnostic Legacy observations, not invented production fields.
+- Cancellation asserts that no stable `DocumentEvent` is emitted; save/reload
+  compares the normalized state after `saveBytes` and `NoteData.fromData`.
+- `artifacts/m1/M1_M2_DECISION_RULES.json` freezes behavior equality, run
+  validity and M2-only performance thresholds before post-M2 results exist.
+- `scripts/m1_validate_oracle.py` rejects missing, reordered or divergent
+  three-run sessions.
+
+No target-device F0/F50 session has been run yet. This preparation does not
+change the report's physical evidence boundary and does not authorize the first
+Handler cutover until both retained sessions pass.

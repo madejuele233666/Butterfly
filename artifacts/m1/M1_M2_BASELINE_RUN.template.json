@@ -1,0 +1,40 @@
+{
+  "schema": "notea.m1.m2-baseline-run/v1",
+  "sourceCommit": "",
+  "apkSha256": "",
+  "fixture": "F0 or F50",
+  "fixtureSha256": "",
+  "replayVersion": "legacy-elements-v1",
+  "normalizationVersion": "element-json-f64-1e-6-v1",
+  "decisionRulesVersion": "m1-m2-gate-2026-07-25-v1",
+  "device": {
+    "serial": "",
+    "buildFingerprint": "",
+    "reportedModel": "",
+    "api": 36
+  },
+  "environment": {
+    "requestedRefreshRateHz": 120,
+    "actualRefreshRateHz": [],
+    "batteryPercentStart": null,
+    "batteryPercentEnd": null,
+    "batteryTemperatureCStart": null,
+    "batteryTemperatureCEnd": null,
+    "thermalStatusStart": null,
+    "thermalStatusEnd": null,
+    "powerMode": "",
+    "mirroring": false,
+    "screenRecording": false,
+    "layoutInspector": false
+  },
+  "runs": [
+    {
+      "run": 1,
+      "oracleJson": "",
+      "probeJsonl": "",
+      "perfettoTrace": "",
+      "valid": null,
+      "invalidReason": ""
+    }
+  ]
+}

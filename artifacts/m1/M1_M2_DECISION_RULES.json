@@ -1,0 +1,100 @@
+{
+  "schema": "notea.m1.m2-decision-rules/v1",
+  "version": "m1-m2-gate-2026-07-25-v1",
+  "frozenAt": "2026-07-25T00:00:00Z",
+  "scope": "M2 Handler to Command to Legacy backend ownership cutover only",
+  "behavior": {
+    "replayVersion": "legacy-elements-v1",
+    "normalizationVersion": "element-json-f64-1e-6-v1",
+    "requiredFixtures": ["F0", "F50"],
+    "minimumRunsPerFixture": 3,
+    "requiredSteps": [
+      "initial",
+      "create-stroke",
+      "erase-strokes",
+      "partial-erase-setup",
+      "partial-erase",
+      "translate-selection-setup",
+      "translate-selection",
+      "undo-translate",
+      "redo-translate",
+      "undo-before-branch",
+      "create-after-undo-branch",
+      "cancel-no-commit",
+      "save-reload"
+    ],
+    "exactAcrossRuns": [
+      "initialFixtureHash",
+      "steps.name",
+      "steps.sequenceRevision",
+      "steps.historyPosition",
+      "steps.historyHead",
+      "steps.canUndo",
+      "steps.canRedo",
+      "steps.stateHash",
+      "steps.elementCount",
+      "steps.layerOrder",
+      "steps.delta"
+    ],
+    "postM2Requirement": "Every field listed in exactAcrossRuns must equal the accepted pre-M2 oracle for the same fixture and replay version.",
+    "forbiddenRelaxations": [
+      "adding ignore fields after observing a mismatch",
+      "changing float quantization after observing a mismatch",
+      "accepting a final-state-only match",
+      "relabeling a Legacy or M2 defect as expected variance"
+    ]
+  },
+  "performance": {
+    "buildVariant": "devProfile",
+    "refreshRateHz": 120,
+    "comparisonStatistic": "median of three per-run percentiles",
+    "frameMetrics": ["buildMicros", "rasterMicros", "totalMicros"],
+    "framePercentiles": [50, 95, 99],
+    "frameRegression": {
+      "relativeLimit": 0.10,
+      "absoluteAllowanceMicros": 500,
+      "decision": "fail when candidate minus baseline exceeds the larger of 10 percent of baseline and 500 microseconds"
+    },
+    "ownerSliceRegression": {
+      "relativeLimit": 0.15,
+      "absoluteAllowanceMicros": 250,
+      "decision": "fail when candidate P95 minus baseline P95 exceeds the larger of 15 percent of baseline and 250 microseconds"
+    },
+    "requiredTraceOwners": [
+      "m1.oracle.create-stroke",
+      "m1.oracle.erase-strokes",
+      "m1.oracle.partial-erase",
+      "m1.oracle.translate-selection",
+      "history.undo",
+      "history.redo",
+      "selection.raycast",
+      "viewport.bake"
+    ],
+    "manualTraceOwners": [
+      "stroke.foreground.update",
+      "stroke.commit",
+      "document.save"
+    ]
+  },
+  "runValidity": {
+    "sameRequired": [
+      "source commit",
+      "APK SHA-256",
+      "fixture SHA-256",
+      "replay version",
+      "device build fingerprint",
+      "requested refresh mode",
+      "power and performance mode",
+      "mirroring and recording disabled"
+    ],
+    "invalidateWhen": [
+      "actual refresh rate changes during the measured replay",
+      "thermal status is nonzero or changes during the measured replay",
+      "probe ring reports dropped records",
+      "a required automatic trace owner is absent",
+      "fixture or replay version differs",
+      "fewer than three successful runs are retained"
+    ]
+  },
+  "changeControl": "Any rule change requires a superseding ADR before collecting the affected post-M2 result."
+}

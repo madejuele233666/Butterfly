@@ -70,6 +70,10 @@ public class MainActivity extends FlutterActivity {
     @Override
     @Nullable
     public String getInitialRoute() {
+        String baselineRoute = getM1BaselineRoute(getIntent());
+        if (baselineRoute != null) {
+            return baselineRoute;
+        }
         if (BuildConfig.M1_PROBE_ENABLED && getIntent().getBooleanExtra("m1Probe", false)) {
             return "/debug/m1";
         }
@@ -83,11 +87,31 @@ public class MainActivity extends FlutterActivity {
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        if (BuildConfig.M1_PROBE_ENABLED && intent.getBooleanExtra("m1Probe", false) && getFlutterEngine() != null) {
+        String baselineRoute = getM1BaselineRoute(intent);
+        if (baselineRoute != null && getFlutterEngine() != null) {
+            getFlutterEngine().getNavigationChannel().pushRoute(baselineRoute);
+        } else if (BuildConfig.M1_PROBE_ENABLED && intent.getBooleanExtra("m1Probe", false) && getFlutterEngine() != null) {
             getFlutterEngine().getNavigationChannel().pushRoute("/debug/m1");
         } else if (handleIntent(intent) && getFlutterEngine() != null) {
             getFlutterEngine().getNavigationChannel().pushRoute("/intent");
         }
+    }
+
+    @Nullable
+    private String getM1BaselineRoute(Intent intent) {
+        if (!BuildConfig.M1_PROBE_ENABLED) {
+            return null;
+        }
+        String fixture = intent.getStringExtra("m1BaselineFixture");
+        if (fixture == null) {
+            return null;
+        }
+        fixture = fixture.toUpperCase(java.util.Locale.ROOT);
+        if (!(fixture.equals("F0") || fixture.equals("F1") || fixture.equals("F10") || fixture.equals("F50"))) {
+            return null;
+        }
+        int runs = Math.max(1, Math.min(10, intent.getIntExtra("m1BaselineRuns", 3)));
+        return "/debug/m1-baseline/" + fixture + "?runs=" + runs;
     }
 
     private boolean handleIntent(Intent intent) {

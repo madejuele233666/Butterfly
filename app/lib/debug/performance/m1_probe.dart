@@ -105,6 +105,17 @@ class M1ProbeController extends ChangeNotifier {
     });
   }
 
+  void captureMarker(String name, [Map<String, Object?> fields = const {}]) {
+    if (!_running || !m1ProbeEnabled) return;
+    _flutterRecords.add({
+      'schema': 'notea.m1.marker/v1',
+      'sourceLayer': 'flutter',
+      'name': name,
+      'eventTimeNanos': DateTime.now().toUtc().microsecondsSinceEpoch * 1000,
+      ...fields,
+    });
+  }
+
   void _captureFrames(List<FrameTiming> timings) {
     if (!_running) return;
     for (final timing in timings) {
