@@ -74,6 +74,10 @@
       "stroke.foreground.update",
       "stroke.commit",
       "document.save"
+    ],
+    "excludedFromOwnerRegression": [
+      "m1.oracle.normalize",
+      "JSON export and fixture construction"
     ]
   },
   "runValidity": {

@@ -116,3 +116,6 @@ claims.
 No target-device F0/F50 session has been run yet. This preparation does not
 change the report's physical evidence boundary and does not authorize the first
 Handler cutover until both retained sessions pass.
+
+The consolidated host-side completion checklist and build-warning
+classification are maintained in `artifacts/m1/M2_PRE_DEVICE_READINESS.md`.

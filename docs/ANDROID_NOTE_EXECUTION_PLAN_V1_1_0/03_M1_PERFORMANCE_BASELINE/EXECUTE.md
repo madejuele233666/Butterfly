@@ -21,6 +21,17 @@
 - 重放由命令或 owner-boundary harness 驱动，人工操作只作交互 smoke，不作为等价性 oracle；
 - 在看到 M2 后测量前冻结行为相等规则和性能回归阈值。
 
+仓库实现入口：
+
+- `app/lib/debug/performance/m1_legacy_oracle.dart`：Legacy event owner replay、规范化状态、Delta 和 save/reload roundtrip；
+- `app/lib/debug/performance/m1_baseline_page.dart`：每轮重建干净 fixture 的真实 document canvas；
+- `artifacts/m1/M1_M2_DECISION_RULES.json`：唯一行为与性能裁决规则；
+- `scripts/m1_validate_oracle.py`：三轮一致性校验；
+- `scripts/windows-m1.ps1 -Action prepare-m2-baseline`：离线可重复的 analyze/test/fixture/profile APK 准备门；
+- `start-baseline` / `pull-baseline`：真机运行和证据拉取。
+
+Legacy 当前没有 production revision 或公开 history cursor。oracle 中的 `sequenceRevision` 和 `historyPosition` 是根据实际状态发射维护的诊断坐标，输出必须明确标注这一语义，不能伪称为 M2 production 字段。
+
 ### 产品与技术决策基线（按需后置）
 
 Notein/原版/当前三方对照、0/1k/10k/50k/200k 完整规模曲线、personalRelease 长时间体验、240/480 fps 光学延迟，以及六类红线全量验收，分别在 M4 发布准备、M7 活动墨迹门和 M8 稳定渲染门按触发条件执行。它们不阻塞 M2，除非 M2 实际改动了对应责任边界。
@@ -43,6 +54,8 @@ M2 的固定序列至少覆盖：
 8. 保存、关闭和重开后的规范化状态。
 
 性能动作必须进入真实 document canvas，并让 `stroke.commit`、`stroke.foreground.update`、`viewport.bake`、`selection.raycast`、`document.save`、`history.undo` 和 `history.redo` 中与该序列对应的 owner trace 实际出现。
+
+自动 replay 负责 Legacy element events、undo/redo、raycast 和 bake。`stroke.foreground.update`、`stroke.commit` 与 `document.save` 必须在单独的干净 F0 Profile 会话中通过真实手写和保存触发；该人工会话只证明 owner trace 存在及其性能，不作为确定性行为 oracle。
 
 ## 采集
 

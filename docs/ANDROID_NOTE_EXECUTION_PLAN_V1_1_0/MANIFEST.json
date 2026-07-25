@@ -12,8 +12,8 @@
     },
     {
       "path": "00_PROJECT_BASELINE/DECISION_LOG.md",
-      "bytes": 1554,
-      "sha256": "f1bb396b4afda2a35ae93e8b4e879dc0830c6c0b6222dfab5dbcf02099675395"
+      "bytes": 2907,
+      "sha256": "3349efa4779da3033e6c4b9d69717a49e5437f7a97a9b3f4fb17ddf6e3f281df"
     },
     {
       "path": "00_PROJECT_BASELINE/EXECUTION_RULES.md",
@@ -122,13 +122,13 @@
     },
     {
       "path": "03_M1_PERFORMANCE_BASELINE/CHECKLIST.md",
-      "bytes": 776,
-      "sha256": "52024c6a90792cff5af434807fe07e2cfb74360cf6aa94ca5cfe96911c409e57"
+      "bytes": 1076,
+      "sha256": "f6fac460c3370f9f10275529c6fac04d297f9c7e0261a30561fee3e43b2d2c18"
     },
     {
       "path": "03_M1_PERFORMANCE_BASELINE/EXECUTE.md",
-      "bytes": 3455,
-      "sha256": "8e55aba66940bdb45603b51fd4432da391ac6703e353d610ad797d80d4e9c7bd"
+      "bytes": 4628,
+      "sha256": "af9b10a984936d03e36708f2c14015e95d0f41b2d5453e1350ffa1f9e23eb1cc"
     },
     {
       "path": "03_M1_PERFORMANCE_BASELINE/data/BENCHMARK_MATRIX.csv",

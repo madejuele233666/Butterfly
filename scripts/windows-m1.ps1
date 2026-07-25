@@ -31,8 +31,9 @@ $GitDirectory = @(
     "D:\install_software\Git\cmd",
     "$env:ProgramFiles\Git\cmd"
 ) | Where-Object { Test-Path (Join-Path $_ "git.exe") } | Select-Object -First 1
+$Git = if ($GitDirectory) { Join-Path $GitDirectory "git.exe" } else { $null }
 
-foreach ($required in @($AppRoot, $Flutter, $Dart, $Adb, $GitDirectory)) {
+foreach ($required in @($AppRoot, $Flutter, $Dart, $Adb, $Git)) {
     if (-not $required -or -not (Test-Path $required)) {
         throw "Required M1 tool or directory is missing: $required"
     }
@@ -97,6 +98,15 @@ function Invoke-Checked {
 
 function Build-Apk {
     param([string]$Flavor, [string]$Mode, [bool]$ProbeEnabled)
+    $sourceCommit = (& $Git -C $Workspace rev-parse HEAD).Trim()
+    if ($LASTEXITCODE -ne 0 -or -not $sourceCommit) {
+        throw "Unable to resolve the source commit for the APK."
+    }
+    $sourceChanges = @(& $Git -C $Workspace status --porcelain)
+    if ($LASTEXITCODE -ne 0) { throw "Unable to inspect the source worktree." }
+    if ($sourceChanges.Count -ne 0) {
+        throw "Refusing a provenance build from a dirty Windows worktree."
+    }
     $define = "M1_PROBE_ENABLED=$($ProbeEnabled.ToString().ToLowerInvariant())"
     Invoke-Checked $Flutter @(
         "build", "apk", "--$Mode", "--flavor", $Flavor,
@@ -104,7 +114,22 @@ function Build-Apk {
     ) "flutter-build-$Flavor-$Mode.log"
     $source = Join-Path $AppRoot "build\app\outputs\flutter-apk\app-$Flavor-$Mode.apk"
     if (-not (Test-Path $source)) { throw "Expected APK was not produced: $source" }
-    Copy-Item -Force $source (Join-Path $EvidenceDirectory "apk\notea-m1-$Flavor-$Mode.apk")
+    $target = Join-Path $EvidenceDirectory "apk\notea-m1-$Flavor-$Mode.apk"
+    Copy-Item -Force $source $target
+    $provenance = [ordered]@{
+        schema = "notea.m1.apk-provenance/v1"
+        sourceCommit = $sourceCommit
+        sourceWorktreeClean = $true
+        builtAtUtc = [DateTime]::UtcNow.ToString("o")
+        flavor = $Flavor
+        mode = $Mode
+        probeEnabled = $ProbeEnabled
+        apk = (Split-Path $target -Leaf)
+        apkBytes = (Get-Item $target).Length
+        apkSha256 = (Get-FileHash -Algorithm SHA256 $target).Hash.ToLowerInvariant()
+    }
+    $provenance | ConvertTo-Json | Set-Content -Encoding utf8 `
+        (Join-Path $EvidenceDirectory "apk\notea-m1-$Flavor-$Mode.provenance.json")
 }
 
 function Require-Device {

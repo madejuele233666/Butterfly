@@ -439,6 +439,14 @@ _NormalizedSnapshot _snapshot(DocumentLoadSuccess state) => _snapshotPage(
 _NormalizedSnapshot _snapshotPage(
   DocumentPage page, {
   required String currentLayer,
+}) => M1Trace.sync(
+  M1TraceName.legacyOracleNormalize,
+  () => _snapshotPageUntraced(page, currentLayer: currentLayer),
+);
+
+_NormalizedSnapshot _snapshotPageUntraced(
+  DocumentPage page, {
+  required String currentLayer,
 }) {
   final elements = <String, String>{};
   final layerOrder = <String, List<String>>{};

@@ -16,3 +16,7 @@
 - [ ] 编辑后重新书写被单独测试
 - [ ] trace 名称稳定
 - [ ] 三方对比、完整规模曲线、personalRelease 与光学录像未被误写成 M2 阻塞项
+- [ ] `prepare-m2-baseline` 在锁定依赖上以 `--no-pub` 通过
+- [ ] F0/F50 各自的三轮 aggregate oracle 通过 `m1_validate_oracle.py`
+- [ ] sequence revision/history position 明确标为 Legacy 诊断坐标
+- [ ] 自动 owner trace 与人工 stroke/save owner trace 的证据职责分开
