@@ -42,6 +42,14 @@ final class M1DeterministicRandom {
   double unit() => next() / 0xffffffff;
 }
 
+NoteData _createM1FixtureData() => NoteData(Archive()).setMetadata(
+  const FileMetadata(
+    fileVersion: kFileVersion,
+    type: NoteFileType.document,
+    name: 'M1 deterministic fixture',
+  ),
+);
+
 BigInt m1Fnv1a64(List<int> bytes) {
   final mask = (BigInt.one << 64) - BigInt.one;
   final prime = BigInt.parse('100000001b3', radix: 16);
@@ -92,13 +100,13 @@ NoteData buildM1SinglePageFixture(M1FixtureId fixture) {
       ),
     ],
   );
-  final (data, _) = NoteData(Archive()).setPage(page, 'M1');
+  final (data, _) = _createM1FixtureData().setPage(page, 'M1');
   return data;
 }
 
 NoteData buildM1PagedFixture({int pageCount = 100, int strokesPerPage = 100}) {
   final random = M1DeterministicRandom(m1FixtureSeed);
-  var data = NoteData(Archive());
+  var data = _createM1FixtureData();
   var strokeIndex = 0;
   for (var pageIndex = 0; pageIndex < pageCount; pageIndex++) {
     final page = DocumentPage(

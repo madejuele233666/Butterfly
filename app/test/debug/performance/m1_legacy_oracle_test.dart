@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:butterfly_api/butterfly_api.dart';
 import 'package:butterfly/bloc/document_bloc.dart';
 import 'package:butterfly/cubits/current_index.dart';
 import 'package:butterfly/cubits/settings.dart';
@@ -85,6 +86,11 @@ void main() {
     final second = generateM1FixtureBytes('f1');
     expect(m1Fnv1a64Hex(first), m1Fnv1a64Hex(second));
     expect(first, orderedEquals(second));
+
+    final reopened = NoteData.fromData(first);
+    expect(reopened.getMetadata()?.type, NoteFileType.document);
+    expect(reopened.getMetadata()?.fileVersion, kFileVersion);
+    expect(reopened.getPages(true), ['M1']);
   });
 
   test(
