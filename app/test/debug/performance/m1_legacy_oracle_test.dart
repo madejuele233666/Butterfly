@@ -134,8 +134,9 @@ void main() {
       orderedEquals(second.steps.map((step) => step['stateHash'])),
     );
     expect(
-      first.steps.map((step) => step['delta']),
-      orderedEquals(second.steps.map((step) => step['delta'])),
+      jsonEncode(first.steps.map((step) => step['delta']).toList()),
+      jsonEncode(second.steps.map((step) => step['delta']).toList()),
     );
   });
 }
+import 'dart:convert';
