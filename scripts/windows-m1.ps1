@@ -162,7 +162,6 @@ switch ($Action) {
         Build-Apk "personal" "release" $false
     }
     "prepare-m2-baseline" {
-        Invoke-Checked $Flutter @("pub", "get") "flutter-pub-get.log"
         Invoke-Checked $Flutter @("analyze", "--no-pub") "flutter-analyze.log"
         Invoke-Checked $Flutter @(
             "test", "--no-pub",

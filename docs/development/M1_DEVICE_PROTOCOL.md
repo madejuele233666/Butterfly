@@ -60,8 +60,11 @@ Set-Location D:\files\Notea_Mirror\workspace
 .\scripts\windows-m1.ps1 -Action prepare-m2-baseline
 ```
 
-This runs analysis, the focused Legacy oracle tests, deterministic fixture
-generation and the `devProfile` build. The device phase then consists of two
+This uses the already locked/resolved dependency set and runs `--no-pub`
+analysis, the focused Legacy oracle tests, deterministic fixture generation
+and the `devProfile` build. Dependency resolution remains a separate explicit
+action and a transient network failure cannot block this repeatable gate. The
+device phase then consists of two
 three-run sessions:
 
 ```powershell
