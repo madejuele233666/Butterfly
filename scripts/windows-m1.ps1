@@ -250,6 +250,7 @@ switch ($Action) {
         & $Adb -s $Device shell am force-stop dev.linwood.butterfly.dev.profile
         & $Adb -s $Device shell am start -S -W `
             -n dev.linwood.butterfly.dev.profile/dev.linwood.butterfly.MainActivity `
+            --ez trace-systrace true `
             --es m1BaselineFixture $Fixture --ei m1BaselineRuns $Runs
         if ($LASTEXITCODE -ne 0) { throw "Unable to launch M1 baseline." }
     }
