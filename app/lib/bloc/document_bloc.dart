@@ -1729,17 +1729,21 @@ class DocumentBloc extends ReplayBloc<DocumentEvent, DocumentState> {
   }
 
   void sendUndo() {
-    if (!(networkingService?.sendUndo() ?? false)) {
-      M1Trace.sync(M1TraceName.historyUndo, undo);
-      _scheduleHistoryReload();
-    }
+    M1Trace.sync(M1TraceName.historyUndo, () {
+      if (!(networkingService?.sendUndo() ?? false)) {
+        undo();
+        _scheduleHistoryReload();
+      }
+    });
   }
 
   void sendRedo() {
-    if (!(networkingService?.sendRedo() ?? false)) {
-      M1Trace.sync(M1TraceName.historyRedo, redo);
-      _scheduleHistoryReload();
-    }
+    M1Trace.sync(M1TraceName.historyRedo, () {
+      if (!(networkingService?.sendRedo() ?? false)) {
+        redo();
+        _scheduleHistoryReload();
+      }
+    });
   }
 }
 
