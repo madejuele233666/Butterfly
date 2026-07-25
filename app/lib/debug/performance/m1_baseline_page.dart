@@ -11,11 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class M1BaselinePage extends StatefulWidget {
-  const M1BaselinePage({
-    super.key,
-    required this.fixture,
-    this.runs = 3,
-  });
+  const M1BaselinePage({super.key, required this.fixture, this.runs = 3});
 
   final M1FixtureId fixture;
   final int runs;
@@ -48,7 +44,8 @@ class _M1BaselinePageState extends State<M1BaselinePage> {
     setState(() => _finishing = true);
     try {
       final now = DateTime.now().toUtc();
-      final sessionId = 'm1-baseline-${widget.fixture.label.toLowerCase()}-'
+      final sessionId =
+          'm1-baseline-${widget.fixture.label.toLowerCase()}-'
           '${now.toIso8601String().replaceAll(':', '-')}';
       final contents = const JsonEncoder.withIndent('  ').convert({
         'schema': 'notea.m1.baseline-session/v1',
@@ -76,9 +73,7 @@ class _M1BaselinePageState extends State<M1BaselinePage> {
   @override
   Widget build(BuildContext context) {
     if (!m1ProbeEnabled) {
-      return const Scaffold(
-        body: Center(child: Text('M1 baseline 未在此构建中启用。')),
-      );
+      return const Scaffold(body: Center(child: Text('M1 baseline 未在此构建中启用。')));
     }
     if (_error != null || _exportPath != null) {
       return Scaffold(
@@ -96,9 +91,7 @@ class _M1BaselinePageState extends State<M1BaselinePage> {
       );
     }
     if (_finishing) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return FutureBuilder<Uint8List>(
       future: _fixtureBytes,

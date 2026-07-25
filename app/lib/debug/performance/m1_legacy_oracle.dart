@@ -13,10 +13,7 @@ const m1NormalizationVersion = 'element-json-f64-1e-6-v1';
 const m1DecisionRulesVersion = 'm1-m2-gate-2026-07-25-v1';
 
 final class M1BaselineRunConfig {
-  const M1BaselineRunConfig({
-    required this.fixture,
-    required this.run,
-  });
+  const M1BaselineRunConfig({required this.fixture, required this.run});
 
   final M1FixtureId fixture;
   final int run;
@@ -151,7 +148,9 @@ final class M1LegacyOracleRunner {
       bloc,
       previous,
       'partial-erase',
-      ElementsChanged({partialSource.id!: [partialLeft, partialRight]}),
+      ElementsChanged({
+        partialSource.id!: [partialLeft, partialRight],
+      }),
       steps,
       expectedPresent: const {
         'm1-oracle-partial-left',
@@ -160,10 +159,7 @@ final class M1LegacyOracleRunner {
       expectedAbsent: const {'m1-oracle-partial-source'},
     );
 
-    final translateSource = _oracleStroke(
-      'm1-oracle-translate',
-      1000020,
-    );
+    final translateSource = _oracleStroke('m1-oracle-translate', 1000020);
     previous = await _applyAndRecord(
       bloc,
       previous,
@@ -174,18 +170,16 @@ final class M1LegacyOracleRunner {
     );
     final translated = translateSource.copyWith(
       points: translateSource.points
-          .map((point) => PathPoint(
-                point.x + 40,
-                point.y + 25,
-                point.pressure,
-              ))
+          .map((point) => PathPoint(point.x + 40, point.y + 25, point.pressure))
           .toList(growable: false),
     );
     previous = await _applyAndRecord(
       bloc,
       previous,
       'translate-selection',
-      ElementsChanged({translateSource.id!: [translated]}),
+      ElementsChanged({
+        translateSource.id!: [translated],
+      }),
       steps,
       expectedElements: {translateSource.id!: translated},
     );
@@ -233,13 +227,15 @@ final class M1LegacyOracleRunner {
     if (cancelAfter.hash != cancelBefore.hash) {
       throw StateError('Cancellation contract produced a stable mutation');
     }
-    steps.add(_record(
-      'cancel-no-commit',
-      cancelBefore,
-      cancelAfter,
-      bloc,
-      ownerAction: 'foreground cancellation; no DocumentEvent emitted',
-    ));
+    steps.add(
+      _record(
+        'cancel-no-commit',
+        cancelBefore,
+        cancelAfter,
+        bloc,
+        ownerAction: 'foreground cancellation; no DocumentEvent emitted',
+      ),
+    );
     previous = cancelAfter;
 
     final savedBytes = await _loaded(bloc).saveBytes();
@@ -258,13 +254,15 @@ final class M1LegacyOracleRunner {
         '${previous.hash} != ${roundTrip.hash}',
       );
     }
-    steps.add(_record(
-      'save-reload',
-      previous,
-      roundTrip,
-      bloc,
-      ownerAction: 'DocumentLoaded.saveBytes + NoteData.fromData',
-    ));
+    steps.add(
+      _record(
+        'save-reload',
+        previous,
+        roundTrip,
+        bloc,
+        ownerAction: 'DocumentLoaded.saveBytes + NoteData.fromData',
+      ),
+    );
 
     if (request.exerciseRenderingOwners) {
       await bloc.rayCastRect(const Rect.fromLTWH(0, 0, 256, 256));
@@ -353,7 +351,8 @@ final class M1LegacyOracleRunner {
     while (true) {
       final byId = {
         for (final renderer in bloc.currentIndexCubit.renderers)
-          if (renderer.element.id != null) renderer.element.id!: renderer.element,
+          if (renderer.element.id != null)
+            renderer.element.id!: renderer.element,
       };
       final present = expectedPresent.every(byId.containsKey);
       final absent = expectedAbsent.every((id) => !byId.containsKey(id));
@@ -378,20 +377,25 @@ final class M1LegacyOracleRunner {
     DocumentBloc bloc, {
     String? ownerAction,
   }) {
-    final created = after.elements.keys
-        .where((id) => !before.elements.containsKey(id))
-        .toList()
-      ..sort();
-    final removed = before.elements.keys
-        .where((id) => !after.elements.containsKey(id))
-        .toList()
-      ..sort();
-    final updated = after.elements.keys
-        .where((id) =>
-            before.elements.containsKey(id) &&
-            before.elements[id] != after.elements[id])
-        .toList()
-      ..sort();
+    final created =
+        after.elements.keys
+            .where((id) => !before.elements.containsKey(id))
+            .toList()
+          ..sort();
+    final removed =
+        before.elements.keys
+            .where((id) => !after.elements.containsKey(id))
+            .toList()
+          ..sort();
+    final updated =
+        after.elements.keys
+            .where(
+              (id) =>
+                  before.elements.containsKey(id) &&
+                  before.elements[id] != after.elements[id],
+            )
+            .toList()
+          ..sort();
     final record = <String, Object?>{
       'name': name,
       'sequenceRevision': _sequenceRevision,
@@ -426,15 +430,13 @@ DocumentLoadSuccess _loaded(DocumentBloc bloc) {
 }
 
 PenElement _oracleStroke(String id, int index) => buildM1Stroke(
-    index,
-    M1DeterministicRandom(m1FixtureSeed ^ index),
-    idPrefix: id,
-  ).copyWith(id: id);
+  index,
+  M1DeterministicRandom(m1FixtureSeed ^ index),
+  idPrefix: id,
+).copyWith(id: id);
 
-_NormalizedSnapshot _snapshot(DocumentLoadSuccess state) => _snapshotPage(
-      state.page,
-      currentLayer: state.currentLayer,
-    );
+_NormalizedSnapshot _snapshot(DocumentLoadSuccess state) =>
+    _snapshotPage(state.page, currentLayer: state.currentLayer);
 
 _NormalizedSnapshot _snapshotPage(
   DocumentPage page, {

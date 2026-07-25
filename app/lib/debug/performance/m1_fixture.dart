@@ -85,11 +85,8 @@ NoteData buildM1SinglePageFixture(M1FixtureId fixture) {
         id: 'm1-layer',
         content: List.generate(
           fixture.strokeCount,
-          (index) => buildM1Stroke(
-            index,
-            random,
-            samples: fixture.samplesPerStroke,
-          ),
+          (index) =>
+              buildM1Stroke(index, random, samples: fixture.samplesPerStroke),
           growable: false,
         ),
       ),
@@ -99,10 +96,7 @@ NoteData buildM1SinglePageFixture(M1FixtureId fixture) {
   return data;
 }
 
-NoteData buildM1PagedFixture({
-  int pageCount = 100,
-  int strokesPerPage = 100,
-}) {
+NoteData buildM1PagedFixture({int pageCount = 100, int strokesPerPage = 100}) {
   final random = M1DeterministicRandom(m1FixtureSeed);
   var data = NoteData(Archive());
   var strokeIndex = 0;

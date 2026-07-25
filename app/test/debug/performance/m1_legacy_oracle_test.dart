@@ -35,8 +35,9 @@ final class _Harness {
 _Harness createHarness(M1FixtureId fixture) {
   final fileSystem = MockButterflyFileSystem();
   final settings = fileSystem.settingsCubit as MockSettingsCubit;
-  when(() => settings.state)
-      .thenReturn(const ButterflySettings(autosave: false));
+  when(
+    () => settings.state,
+  ).thenReturn(const ButterflySettings(autosave: false));
   when(() => settings.stream).thenAnswer((_) => const Stream.empty());
   final currentIndex = CurrentIndexCubit(
     settings,
@@ -86,58 +87,63 @@ void main() {
     expect(first, orderedEquals(second));
   });
 
-  test('Legacy oracle covers mutations, history, cancellation and reload',
-      () async {
-    final result = await runOracle();
-    final byName = {
-      for (final step in result.steps) step['name']! as String: step,
-    };
+  test(
+    'Legacy oracle covers mutations, history, cancellation and reload',
+    () async {
+      final result = await runOracle();
+      final byName = {
+        for (final step in result.steps) step['name']! as String: step,
+      };
 
-    expect(byName.keys, containsAll([
-      'create-stroke',
-      'erase-strokes',
-      'partial-erase',
-      'translate-selection',
-      'undo-translate',
-      'redo-translate',
-      'create-after-undo-branch',
-      'cancel-no-commit',
-      'save-reload',
-    ]));
-    expect(
-      (byName['create-stroke']!['delta']! as Map)['created'],
-      ['m1-oracle-create'],
-    );
-    expect(
-      (byName['erase-strokes']!['delta']! as Map)['removed'],
-      ['m1-oracle-create'],
-    );
-    expect(
-      (byName['partial-erase']!['delta']! as Map)['created'],
-      ['m1-oracle-partial-left', 'm1-oracle-partial-right'],
-    );
-    expect(byName['create-after-undo-branch']!['canRedo'], isFalse);
-    expect(
-      byName['cancel-no-commit']!['stateHash'],
-      byName['create-after-undo-branch']!['stateHash'],
-    );
-    expect(
-      byName['save-reload']!['stateHash'],
-      byName['cancel-no-commit']!['stateHash'],
-    );
-  });
+      expect(
+        byName.keys,
+        containsAll([
+          'create-stroke',
+          'erase-strokes',
+          'partial-erase',
+          'translate-selection',
+          'undo-translate',
+          'redo-translate',
+          'create-after-undo-branch',
+          'cancel-no-commit',
+          'save-reload',
+        ]),
+      );
+      expect((byName['create-stroke']!['delta']! as Map)['created'], [
+        'm1-oracle-create',
+      ]);
+      expect((byName['erase-strokes']!['delta']! as Map)['removed'], [
+        'm1-oracle-create',
+      ]);
+      expect((byName['partial-erase']!['delta']! as Map)['created'], [
+        'm1-oracle-partial-left',
+        'm1-oracle-partial-right',
+      ]);
+      expect(byName['create-after-undo-branch']!['canRedo'], isFalse);
+      expect(
+        byName['cancel-no-commit']!['stateHash'],
+        byName['create-after-undo-branch']!['stateHash'],
+      );
+      expect(
+        byName['save-reload']!['stateHash'],
+        byName['cancel-no-commit']!['stateHash'],
+      );
+    },
+  );
 
-  test('Legacy oracle state hashes are deterministic across fresh runs',
-      () async {
-    final first = await runOracle();
-    final second = await runOracle();
-    expect(
-      first.steps.map((step) => step['stateHash']),
-      orderedEquals(second.steps.map((step) => step['stateHash'])),
-    );
-    expect(
-      jsonEncode(first.steps.map((step) => step['delta']).toList()),
-      jsonEncode(second.steps.map((step) => step['delta']).toList()),
-    );
-  });
+  test(
+    'Legacy oracle state hashes are deterministic across fresh runs',
+    () async {
+      final first = await runOracle();
+      final second = await runOracle();
+      expect(
+        first.steps.map((step) => step['stateHash']),
+        orderedEquals(second.steps.map((step) => step['stateHash'])),
+      );
+      expect(
+        jsonEncode(first.steps.map((step) => step['delta']).toList()),
+        jsonEncode(second.steps.map((step) => step['delta']).toList()),
+      );
+    },
+  );
 }
