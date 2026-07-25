@@ -20,6 +20,9 @@ DTO/接口和尚未接管调用方的 `LegacyDartBackend` 是加法变更，可�
 
 独立的十二项 Pencil trace、纯 60 Hz 双指场景、Wi-Fi ADB、Notein 三方对照、完整规模曲线、personalRelease 和光学录像不属于本阶段切换门，除非本阶段代码实际改变了这些责任边界。
 
+当前状态：上述五项开始门均已满足。M2 可从 Commit 1 开始；M2 的退出
+门仍全部未满足，不能把“允许开始”写成“M2 完成”。
+
 ## 步骤
 
 1. 复制 `interfaces/DocumentBackend.dart` 到项目设计目录并按当前代码调整。

@@ -36,3 +36,22 @@ M2 的目的不是证明产品已经达到最终性能，而是在不改变 Lega
 - 五项必需证据齐全：允许逐 Handler 切换，每次独立回滚并运行同一 replay；
 - 缺少任一项：DTO/adapter 等加法工作可继续，但不得切换第一个 Handler；
 - post-M2 出现差异：定位第一个错误状态及其 owner，不通过放宽 normalization、改阈值或下游补偿掩盖。
+
+## 当前裁决（2026-07-25）
+
+**PASS：允许第一个可回滚 Handler 所有权切换。**
+
+- F0/F50 行为各有三轮有效 oracle；
+- F50 三个独立 Profile run 均包含全部八个自动 owner、零 incomplete
+  slice，probe ring 零丢失；
+- 人工真笔 session 覆盖 foreground、commit、save owner；
+- 三轮 percentile 中位数已固化在
+  `D:\files\Notea_Mirror\evidence\m1\f50-independent-performance-baseline.json`；
+- 规则版本仍为 `m1-m2-gate-2026-07-25-v1`，未在看到 post-M2 数据后修改。
+
+F0 空文档没有可见 renderer，因而 `selection.raycast` 不可达；不为制造
+slice 而伪造元素。全部 owner 回归以 F50 为适用 fixture，F0 保留空状态
+行为和帧基线。
+
+此 PASS 仅授权 M2 所有权边界，不授权产品发布、光学延迟、长时间稳定性、
+Jetpack Ink 或 tile cache 结论。

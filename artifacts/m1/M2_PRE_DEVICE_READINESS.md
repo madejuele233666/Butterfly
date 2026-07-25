@@ -1,77 +1,87 @@
-# M2 pre-device readiness
+# M2 readiness and cutover boundary
 
-Status: **host preparation implemented; target-device evidence remains open**.
+Status: **pre-M2 physical evidence complete; first Handler cutover allowed**.
 
-This report is the boundary immediately before the two physical `devProfile`
-baseline sessions. It does not authorize a Handler cutover and it is not a
-device PASS report.
+This report records the gate immediately before M2 implementation. It accepts
+only the Legacy-to-Backend ownership transition, not final product performance.
 
 ## Five prerequisite surfaces
 
-1. The Legacy behavior oracle replays the fixed 13-step
-   `legacy-elements-v1` sequence at the actual `DocumentBloc` event owner. It
-   covers create, whole-stroke erase, partial erase, selection translation,
-   undo, redo, branch-after-undo, cancellation without commit, and save/reload.
-2. Every step records the normalized document hash, layer order, structural
-   Delta, `canUndo`, and `canRedo`. `sequenceRevision` and `historyPosition`
-   are explicitly diagnostic replay coordinates because Legacy exposes no
-   production revision or public history cursor.
-3. The in-app baseline route creates a fresh F0 or F50 fixture for each run,
-   enters the real document canvas, and requests three runs by default.
-4. Behavior equality, run validity, frame regression, and owner-slice
-   regression are frozen in `M1_M2_DECISION_RULES.json`. Oracle normalization,
-   fixture construction, and JSON export are excluded from timed owner slices.
-5. Windows preparation retains analysis, focused tests, fixture manifests,
-   build logs, the Profile APK, and APK provenance outside Git. The provenance
-   records a clean source commit and the copied APK SHA-256.
+1. The fixed `legacy-elements-v1` replay covers create, whole-stroke erase,
+   partial erase, selection translation, undo, redo, branch-after-undo,
+   cancellation without commit and save/reload at the actual `DocumentBloc`
+   event owner.
+2. Every step records normalized state, layer order, structural Delta,
+   `canUndo`, `canRedo`, and explicitly diagnostic Legacy replay/history
+   coordinates.
+3. F0 and F50 each have three valid behavior runs. The exact three independent
+   F50 performance sessions also combine to `valid=true` through
+   `m1_validate_oracle.py`.
+4. Frame and owner percentiles use `nearest-rank-v1`; comparison uses the median
+   of three per-run percentiles. Rules remain frozen in
+   `M1_M2_DECISION_RULES.json`.
+5. The retained `devProfile` APK, provenance, JSONL, Perfetto traces, analysis
+   JSON and invalid-run evidence remain outside Git under the Windows evidence
+   tree.
 
-## Host proof required before device work
+## Gate checklist
 
-- [x] Dart formatting and repository diff checks pass.
-- [x] Flutter static analysis passes with the locked dependency set.
-- [x] Focused Legacy oracle tests pass.
-- [x] Full Flutter tests pass.
-- [x] Python oracle-validator tests and bytecode compilation pass.
-- [x] All deterministic fixtures are regenerated with a manifest.
-- [x] A clean-source `devProfile` APK and provenance JSON are retained.
-- [x] WSL, Git mirror, Windows workspace, and GitHub branch resolve to the same
-      commit.
+- [x] Static analysis passes on the behavior-affecting application sources.
+- [x] Python validator/analyzer suite passes: 13 tests.
+- [x] Clean-source `devProfile` APK retained and installed for accepted runs.
+- [x] F0 three-run aggregate passes the frozen oracle validator.
+- [x] Three independent F50 sessions combine to a valid frozen oracle.
+- [x] Three F50 probe runs report zero native and Flutter ring drops.
+- [x] Three F50 Perfetto analyses contain all eight required automatic owners
+      with zero incomplete slices.
+- [x] Real stylus trace contains foreground, commit and save owners.
+- [x] WSL, Git mirror and Windows workspace are synchronized.
 
-Evidence snapshot on 2026-07-25:
+## Authoritative artifacts
 
-- Windows `flutter analyze --no-pub`: no issues found.
-- Windows focused Legacy oracle suite: 3 tests passed.
-- Windows full Flutter suite: 52 tests passed on the formatted sources.
-- WSL Python suites: 5 tests passed; validator/analyzer bytecode compiled.
-- Profile APK provenance source: `2e39a1595d44b38db3f2a71f3b8adf75f6c78c15`
-  with a clean Windows worktree. This source includes the final Dart formatter
-  output and the completed host-readiness record.
-- Profile APK SHA-256:
-  `d900674dca0acaefa3d4fd99778d3b79bc7c19bb3899cd39b2d2cc762070f99b`.
+- APK SHA-256:
+  `9ad5a78a4f45373b47ed43cf6a53dde3b4aba22cf3e95d2abf2e11ea635301d3`.
+- F0 aggregate SHA-256:
+  `1d38d7f187a00c9da10240e3c1ea368abcb55a004d61df2c1e848673c547c52a`.
+- F50 independent oracle validation SHA-256:
+  `515ac69505603b0b563f770e52e75029b22beb5d3580d4397082b409de7eac21`.
+- F50 performance baseline SHA-256:
+  `261229d6de4cfe67621eea72f94373ef620b0f6fc44d84f5b923b7b6a201a5e3`.
+- Manual owner analysis SHA-256:
+  `d1cb0bc08075dc24636b07e5e5a51500fff3d2ed665fc57d59755b44c675e298`.
 
-## Physical evidence deliberately left open
+## Owner applicability
 
-- [ ] F0 aggregate contains three valid, structurally identical oracle runs.
-- [ ] F50 aggregate contains three valid, structurally identical oracle runs.
-- [ ] Corresponding Pointer/Frame JSONL and Perfetto traces are retained.
-- [ ] Automatic bake/raycast/history owner traces are present.
-- [ ] A separate clean F0 manual session observes foreground, commit, and save
-      owner traces.
-- [ ] The retained sessions pass `scripts/m1_validate_oracle.py` and the frozen
-      performance rules.
+`selection.raycast` is not reachable on the empty F0 fixture because there are
+no visible renderers. This is an observed producer/input contract, not a
+missing fallback. F0 owns empty-state behavior and frame parity; F50 owns the
+all-required-owner slice baseline.
 
-Only the unchecked physical evidence can close the M1-to-M2 gate. Host tests,
-an APK build, or earlier probe-page traces cannot substitute for it.
+## Known current limitations
+
+- The focused current Windows Flutter test is blocked by absent cached
+  `pdfium.dll` and a failed dependency TLS download. Earlier 3-test/52-test
+  passes are retained history, not current exact-source proof.
+- Long F50 bake blocks the main isolate for seconds. Two externally interrupted
+  attempts produced focus-event ANRs and are retained as later rendering-risk
+  evidence. They are excluded from the accepted same-condition runs.
+- Complete product scale curves, optical latency and personalRelease endurance
+  are not M2 ownership-boundary inputs.
 
 ## Build-log classification
 
 - Font tree-shaking and omission of web-only `pdfrx` assets are expected target
-  optimization messages, not missing Android content.
-- The Android toolchain currently builds successfully with command-line tools
-  22.0, AGP 8.13.2, Gradle 8.14.5, and compile SDK 36. An SDK XML compatibility
-  warning appeared in an earlier build but did not reproduce in the retained
-  final build; no current failure is hidden or claimed fixed without a stable
-  trigger.
-- Flutter reports that several plugins still apply the Kotlin Gradle Plugin.
-  This is an upstream/plugin migration warning for a future Flutter version.
-  It remains visible rather than being hidden or worked around in the app.
+  messages.
+- The final Android build completed all native ABIs; there is no current NDK
+  build blocker.
+- Flutter's Kotlin built-in migration notice remains an upstream/plugin future
+  migration warning. It is visible and is not suppressed with an app-side
+  workaround.
+- Java 8/deprecation messages originate in dependencies and remain visible.
+
+## M2 execution rule
+
+M2 may now proceed one reversible Handler at a time. Each cutover must compare
+the same replay and retained baseline. A mismatch must be traced to the first
+wrong state/owner; normalization, thresholds and fixture meaning must not be
+changed after seeing post-M2 results.

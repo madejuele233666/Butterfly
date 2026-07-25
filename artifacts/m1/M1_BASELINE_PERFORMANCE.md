@@ -1,121 +1,148 @@
 # M1 baseline performance report
 
-Status: **host-side oracle/replay path prepared; target-device M2 baseline remains open**.
+Status: **M1-to-M2 ownership-cutover input is complete; this is not a product-release performance PASS**.
 
 ## Run identity
 
 - Application/build: Notea `devProfile`, package
   `dev.linwood.butterfly.dev.profile`, version 2.5.3 (185).
-- Application source/build commit: `7468b4823f7461599bef99b6706b77133abc7336`.
-- APK SHA-256: `b9da4a2177ee1a11cfa6c2d834bf4ca26f58d315bc1f5626119b4062f92c19b6`.
-- Device: Android-reported `OnePlus OPD2413`, API 36; build fingerprint is in
-  `artifacts/m1/M1_DEVICE_REPORT.md`.
-- Refresh rate: 120.00001 Hz throughout the retained profile JSONL.
-- End snapshot: battery 95%, USB powered, battery 28.9 C, Thermal Status 0,
-  high-performance mode 0. This was measured after the run, not at its start.
-- Workload: operator-driven continuous handwriting for the 30-second Perfetto
-  window, including fast/slow strokes, pressure changes and Pencil key actions.
-- Fixture parity: not established. The probe page was used rather than the
-  frozen F0/F1/F10/F50 documents.
-- Android package manager reports the profile APK as debuggable. Results are a
-  profile-AOT diagnostic baseline, not a personalRelease verdict.
+- Physically tested APK source anchor:
+  `6411de344427dfd59eff1186fd13d81bc3dbb1b8`.
+- APK SHA-256:
+  `9ad5a78a4f45373b47ed43cf6a53dde3b4aba22cf3e95d2abf2e11ea635301d3`.
+- Device: Android-reported `OnePlus OPD2413`, API 36, serial `5370fdbb`;
+  full fingerprint is retained in `M1_DEVICE_REPORT.md`.
+- Requested and active baseline refresh: 120.00001 Hz.
+- End-state observations: USB powered, battery 100%, battery temperature 29.0 C,
+  Thermal Status 0. The vendor thermal-service CPU values were internally
+  inconsistent and are not used as acceptance evidence.
+- Percentiles use `nearest-rank-v1`. The comparison statistic is the median of
+  three independent per-run percentiles, exactly as frozen in
+  `M1_M2_DECISION_RULES.json`.
 
-## Compared builds
+The APK source anchor predates later trace-analysis scripts and documentation
+only. Those later changes do not alter application bytecode. The retained APK
+itself is the package installed for every accepted physical run.
 
-| Build | package/version | configuration parity | retained evidence |
-|---|---|---|---|
-| Notein | not run | not established | none |
-| Butterfly v2.5.3 pristine | not run | not established | none |
-| Notea current | `dev.linwood.butterfly.dev.profile` 2.5.3 (185) | standalone exploratory run | JSONL + Perfetto |
+## Behavior baseline
 
-## Observed Notea profile measurements
+- F0 accepted three-run aggregate:
+  `baseline\m1-baseline-f0-2026-07-25T13-21-14.012310Z.json`, SHA-256
+  `1d38d7f187a00c9da10240e3c1ea368abcb55a004d61df2c1e848673c547c52a`.
+- F0 fixture hash: `edaac01263bba468`.
+- F50 independent performance sessions were combined through the existing
+  oracle validator. `f50-independent-oracle-validation.json` reports three
+  runs, `valid=true`, no errors; SHA-256
+  `515ac69505603b0b563f770e52e75029b22beb5d3580d4397082b409de7eac21`.
+- F50 fixture hash: `350912cceb29e6af`.
+- Replay: `legacy-elements-v1`; normalization:
+  `element-json-f64-1e-6-v1`; rules:
+  `m1-m2-gate-2026-07-25-v1`.
 
-- Native current/history/total samples: 6,407 / 374 / 6,781.
-- Flutter PointerEvents: 6,379.
-- Native and Flutter ring-buffer drops: 0 / 0.
-- 3,307 Flutter FrameTiming records were retained.
-- Build p50/p90/p95/p99: 0.233 / 0.335 / 0.439 / 0.917 ms.
-- Raster p50/p90/p95/p99: 1.268 / 1.347 / 1.378 / 1.652 ms.
-- Total p50/p90/p95/p99: 2.040 / 2.610 / 3.407 / 4.637 ms.
+Both fixtures preserve the frozen 13-step state, history and Delta contract.
+The independent F50 runs also prove that the exact performance sessions, not
+only an earlier aggregate, are behavior-identical.
 
-All reported total-frame percentiles are below the nominal 8.33 ms period at
-120 Hz for this workload. This does not measure contact-to-visible-ink latency,
-does not cover a real document fixture and does not prove missed-frame count.
+## F50 performance baseline
 
-## Perfetto attribution
+The authoritative artifact is
+`D:\files\Notea_Mirror\evidence\m1\f50-independent-performance-baseline.json`
+(SHA-256
+`261229d6de4cfe67621eea72f94373ef620b0f6fc44d84f5b923b7b6a201a5e3`).
+Each run was a fresh cold-start `Runs=1` session with its own Perfetto trace and
+probe JSONL. All three owner analyses contain every required owner, zero
+incomplete slices, and all probe rings report zero drops.
 
-- Trace size: 67,013,554 bytes.
-- Perfetto version recorded in the trace: v49.0; the trace was parsed with the
-  official trace processor distributed by the Perfetto Python package.
-- `stylus.dispatch`: 1,591 slices, average 0.416 ms, maximum 1.753 ms.
-- `stylus.history.decode`: 1,668 slices, average 0.261 ms, maximum 1.464 ms.
-- Both slice types resolve through slice -> thread_track -> thread -> process to
-  PID 20780, main thread name `fly.dev.profile`.
-- All threads in PID 20780 accumulated 3,842.231 ms scheduled CPU time across
-  8,966 sched slices during the trace.
-- The trace schema contains Android actual/expected FrameTimeline tables, but
-  `actual_frame_timeline_slice` contained no rows. No Android jank count is
-  claimed from this trace.
-- Stroke/bake/raycast/save/undo/redo slices were not observed because the probe
-  page workload did not enter those application owners.
+### Frame medians, microseconds
 
-## Six performance red lines
+| Metric | P50 | P95 | P99 |
+|---|---:|---:|---:|
+| Build | 98,210 | 233,579 | 233,579 |
+| Raster | 105,710 | 200,110 | 200,110 |
+| Total | 456,066 | 8,312,691 | 8,312,691 |
 
-| Red line | Current evidence | Status |
-|---|---|---|
-| Visible ink lag | No 240/480 fps external camera capture | open |
-| Sample loss/distortion | Probe rings dropped zero; native/Flutter counts retained, but OS/optical loss not proven | partial |
-| Stroke-count degradation | F1/F10/F50 active-path comparison not run | open |
-| Pan/zoom jank | Mixed-refresh input evidence exists; formal fixture replay and Android FrameTimeline absent | open |
-| Post-edit degradation | Edit sequence and post-edit writing not run | open |
-| Undo pause | Fixed 100 undo/redo sequence not run | open |
+These values include the deliberately heavy F50 replay, normalization and
+render-owner work. They are comparison baselines for the M2 ownership change,
+not interactive-frame acceptance thresholds.
 
-## Retained evidence
+### Owner-slice P95 medians, microseconds
 
-- `D:\files\Notea_Mirror\evidence\m1\m1-2026-07-24T19-36-57.656978Z-profile.jsonl`
-  (`8abd35228608381ad957efd2b00fb91cd5e8ec41722e92d18b5784925bfa54ff`)
-- `D:\files\Notea_Mirror\evidence\m1\m1-dev-profile-analysis.json`
-- `D:\files\Notea_Mirror\evidence\m1\notea-m1-dev-profile.perfetto-trace`
-  (`e302cd173abe96f8a7f35f06e9d19b49d34da406f93c0550227b4b9b5d949f5c`)
+| Owner | P95 |
+|---|---:|
+| `m1.oracle.create-stroke` | 144.844 |
+| `m1.oracle.erase-strokes` | 209.896 |
+| `m1.oracle.partial-erase` | 204.115 |
+| `m1.oracle.translate-selection` | 198.750 |
+| `history.undo` | 270.990 |
+| `history.redo` | 188.646 |
+| `selection.raycast` | 279,406.250 |
+| `viewport.bake` | 12,294,791.662 |
+
+The high F50 raycast and bake values are observed Legacy behavior and are not
+hidden or reclassified. M2 must not regress them beyond the frozen rule; later
+rendering stages decide whether they require architectural replacement.
+
+## F0 applicability boundary
+
+F0 already has a valid three-run behavior and frame baseline. A retained
+30-second applicability trace proves that all automatic owners except
+`selection.raycast` are observed. The missing raycast is contractually
+unreachable: an empty fixture has no visible renderer, and
+`DocumentBloc.rayCastRect` returns before entering the raycast algorithm.
+Artificially creating work would stop measuring F0. Therefore owner-slice
+regression uses F50, where all eight owners are reachable; F0 remains the empty
+state/parity/frame fixture.
+
+Evidence:
+`final-f0-owner-applicability-analysis.json`, SHA-256
+`68fd357577cc5904d34b4ebaeb23e87cbfae3fc8abb1e8e43b29ce2537d03fc1`.
+
+## Manual real-stroke owners
+
+The separate stylus session retains 560 completed
+`stroke.foreground.update`, two `stroke.commit`, and five `document.save`
+slices. Its analysis SHA-256 is
+`d1cb0bc08075dc24636b07e5e5a51500fff3d2ed665fc57d59755b44c675e298`.
+This proves real input reaches those owners; it is not mixed into deterministic
+F50 owner regression.
+
+## Invalid evidence retained but excluded
+
+- `m1-baseline-f50-2026-07-25T13-01-13.057987Z.json` was interrupted while
+  being written and is invalid JSON.
+- The 360-second/64-MiB trace overwrote early runs in its ring buffer.
+- `notea-m1-f50-full3-8594b8e-240s-invalid-anr.perfetto-trace` ended after a
+  focus-event ANR.
+- `notea-m1-f50-run3-96db167-100s-invalid-external-focus-anr.perfetto-trace`
+  coincided with a WeChat VoIP foreground transition; Android killed the app
+  after `FocusEvent(hasFocus=false)` waited five seconds behind a long bake.
+
+These files are retained as causal evidence and are not counted toward the
+accepted three runs. The focus-event ANR is a real reachable Legacy risk for
+later rendering work, but an externally interrupted run cannot define the M2
+same-condition baseline.
+
+## Tool and test boundary
+
+- Windows `flutter analyze --no-pub`: passed with zero issues on the
+  behavior-affecting application sources.
+- Current Python analyzer/validator suite: 13 tests passed.
+- The final clean Windows Android build rebuilt all Cargokit ABIs and produced
+  the retained APK hash.
+- A current focused Windows Flutter-test rerun is blocked by the missing local
+  `pdfium.dll`; the dependency attempted a TLS download after cache cleanup.
+  Earlier focused/full Flutter passes are historical and are not presented as
+  current-source test proof.
+- The device-side three-run oracle and owner traces are current behavioral
+  evidence for the M1-to-M2 gate.
 
 ## Decision
 
-The current instrumentation is capable of quantifying native dispatch/history
-cost and Flutter frame distributions on the real device. Because this run used
-the probe page, it did not enter the document owners and cannot authorize the
-first M2 Handler cutover.
+The first M2 Handler ownership cutover is authorized. Post-M2 runs must use the
+same APK mode, fixtures, replay, normalization, percentile implementation and
+three-independent-run aggregation, then apply the frozen behavior and
+regression rules without changing ignore fields or thresholds.
 
-The remaining M2 gate is narrower and causal: freeze the Legacy operation
-oracle and deterministic owner-boundary replay, run it on an empty and a
-representative stress document at least three times in `devProfile`, observe
-the applicable stroke/bake/raycast/save/history traces, and freeze the parity
-and regression rules before post-M2 data exists.
-
-Notein/pristine/current comparison, the full scale curve, personalRelease
-endurance and optical latency remain useful later evidence, but do not block
-M2 because the backend interface does not own those product or active-rendering
-claims.
-
-## Prepared after the exploratory run
-
-- Shared deterministic fixture producer is used by both the command-line
-  generator and the in-app baseline route.
-- `/debug/m1-baseline/F0` and `/debug/m1-baseline/F50` create a fresh real
-  document canvas for each requested run and execute `legacy-elements-v1`.
-- The oracle records an exact normalized state hash, layer order,
-  created/updated/removed payloads, observed history position and undo/redo
-  capability after every step. Its sequence revision and history position are
-  explicitly diagnostic Legacy observations, not invented production fields.
-- Cancellation asserts that no stable `DocumentEvent` is emitted; save/reload
-  compares the normalized state after `saveBytes` and `NoteData.fromData`.
-- `artifacts/m1/M1_M2_DECISION_RULES.json` freezes behavior equality, run
-  validity and M2-only performance thresholds before post-M2 results exist.
-- `scripts/m1_validate_oracle.py` rejects missing, reordered or divergent
-  three-run sessions.
-
-No target-device F0/F50 session has been run yet. This preparation does not
-change the report's physical evidence boundary and does not authorize the first
-Handler cutover until both retained sessions pass.
-
-The consolidated host-side completion checklist and build-warning
-classification are maintained in `artifacts/m1/M2_PRE_DEVICE_READINESS.md`.
+This decision does not accept optical ink latency, long-duration release use,
+full capacity curves, exact Pencil shortcut semantics, Jetpack Ink, or tile
+cache. Those remain attached to their actual later owners and decision gates.

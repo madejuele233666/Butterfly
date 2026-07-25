@@ -35,3 +35,17 @@
 - 完整产品矩阵只在对应发布或技术决策门触发时成为阻塞项，不能代替当前 owner 的确定性 oracle。
 
 完整计划与全部原始问答位于 `90_MASTER_AND_REFERENCE`。
+
+## 当前执行状态（2026-07-25）
+
+- M0：完成；工具链、AVD、原版基线、USB 真机和最小 Windows Build
+  Tools 均已有证据。
+- M1 输入探针：M2 所需输入事实完成；精确快捷键/掌托语义仍按未来功能
+  owner 触发隔离测试。
+- M1 行为与性能基线：完成；F0/F50 三轮行为通过，F50 三个独立
+  Profile run 的帧/owner 百分位已冻结，人工 stroke/save owner 已观察。
+- M1 → M2：门已打开，允许进入第一个可回滚 Handler cutover。
+- M2：尚未实施。接下来只抽离 Legacy 后端边界并保持 Legacy 为唯一真相；
+  每个迁移提交必须回放同一 oracle 并与 pre-M2 基线比较。
+- M3–M6 及 Jetpack Ink/tile/发布门：顺序和责任边界不变，不因 M1
+  完成而提前宣称通过。

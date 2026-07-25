@@ -71,12 +71,12 @@ M2 的固定序列至少覆盖：
 
 ## 退出门槛
 
-- [ ] Legacy 固定序列的逐步规范化状态、history cursor、revision 和 Delta 集合已冻结；
-- [ ] owner-boundary replay 可确定性重复，空文档和代表性压力文档各至少三轮；
-- [ ] 对应 owner trace 在真实 document canvas 上实际出现；
-- [ ] pre-M2 行为相等规则和性能回归阈值已在 post-M2 数据出现前冻结；
-- [ ] 可区分活动笔画、Baking、编辑、保存和历史操作的时间；
-- [ ] 基线 trace 与 APK 已归档。
+- [x] Legacy 固定序列的逐步规范化状态、history cursor、revision 和 Delta 集合已冻结；
+- [x] owner-boundary replay 可确定性重复，空文档和代表性压力文档各至少三轮；
+- [x] 对应可达 owner trace 在真实 document canvas 上实际出现；
+- [x] pre-M2 行为相等规则和性能回归阈值已在 post-M2 数据出现前冻结；
+- [x] 可区分活动笔画、Baking、编辑、保存和历史操作的时间；
+- [x] 基线 trace、分析 JSON、无效运行因果证据与 APK 已归档。
 
 ## 交付物
 
